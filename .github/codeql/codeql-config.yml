@@ -1,0 +1,6 @@
+name: ai-orchestra CodeQL config
+# web/dist is the committed, minified build output embedded in the binary: it is React's code, not ours.
+paths-ignore:
+  - web/dist
+  - web/node_modules
+  - docs

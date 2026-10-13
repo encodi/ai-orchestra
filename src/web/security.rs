@@ -8,6 +8,10 @@
 //!   token in `X-AIO-Token` (only the page this server serves knows it; other origins cannot read it),
 //!   JSON content, and, when the browser sends an `Origin`, an origin that is ours. There is no CORS: a
 //!   cross-origin page cannot read any response.
+//! * **Fetch metadata** - browsers label every request with `Sec-Fetch-Site`. Anything not from this origin
+//!   (`cross-site`, or `same-site`, which includes another web app on `localhost` with a different port) is
+//!   refused, except a plain top-level navigation by GET, which only shows the page. This is defence in depth
+//!   on top of the Origin and token checks, and it also covers reads, which carry no token.
 //! * **Content** - a strict Content-Security-Policy (no remote scripts, fonts or styles, no framing),
 //!   `nosniff`, no referrer, no caching of API answers.
 
@@ -108,6 +112,15 @@ pub async fn guard(State(state): State<Arc<AppState>>, req: Request, next: Next)
         && !origin_allowed(origin, &state)
     {
         return ApiError::forbidden("cross-origin requests are not accepted").into_response();
+    }
+    if let Some(site) = header_str(headers, "sec-fetch-site") {
+        let ours = matches!(site, "same-origin" | "none");
+        let navigation = req.method() == Method::GET
+            && header_str(headers, "sec-fetch-mode") == Some("navigate");
+        if !ours && !navigation {
+            return ApiError::forbidden("requests from other sites are not accepted")
+                .into_response();
+        }
     }
     if req.method() == Method::OPTIONS {
         return ApiError::new(

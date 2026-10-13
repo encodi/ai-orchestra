@@ -82,10 +82,15 @@ impl AppState {
     }
 }
 
+/// Largest request body accepted (bytes).
+pub const MAX_BODY_BYTES: usize = 1024 * 1024;
+
 pub fn router(state: Arc<AppState>) -> Router {
     Router::new()
         .merge(api::routes())
         .fallback(api::static_files)
+        // Every JSON body this API takes is small; an explicit cap, not just the framework's default.
+        .layer(axum::extract::DefaultBodyLimit::max(MAX_BODY_BYTES))
         .layer(middleware::from_fn_with_state(
             state.clone(),
             security::guard,

@@ -30,7 +30,11 @@ test('a finished consultation is searchable, replayable from its record, exporta
   await page.getByRole('button', { name: 'Reiniciar' }).click()
   await expect(page.locator('.bubble')).toHaveCount(0)
   await page.getByRole('button', { name: 'Siguiente mensaje' }).click()
-  await expect(page.locator('.bubble')).toHaveCount(1)
+  // Agents that finished at the same recorded instant appear together, so "next" reveals one or more.
+  await expect(page.locator('.bubble').first()).toBeVisible()
+  const revealed = await page.locator('.bubble').count()
+  expect(revealed).toBeGreaterThanOrEqual(1)
+  expect(revealed).toBeLessThan(total)
   await page.getByRole('slider', { name: 'Posición de la reproducción' }).focus()
   await page.keyboard.press('End')
   await expect(page.locator('.bubble')).toHaveCount(total)

@@ -8,5 +8,6 @@ while [ $# -gt 0 ]; do
   if [ "$1" = "-p" ]; then prompt="$2"; fi
   shift
 done
-. "$here/body.sh" google "$prompt"
+AGENT=google PROMPT="$prompt"
+. "$here/body.sh"
 printf '{"conversation_id":"c1","status":"SUCCESS","response":"%s"}\n' "$BODY"

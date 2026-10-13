@@ -2,7 +2,8 @@
 #   FAIL_<AGENT>   that agent exits with an error      SLOW_<AGENT>   that agent sleeps 30 s
 #   SLEEPALL       every agent sleeps 30 s             DISAGREE       the answers list an unresolved disagreement
 # Nothing here contacts a model or the network.
-agent="$1"; prompt="$2"
+# The caller sets AGENT and PROMPT before sourcing this file (POSIX `.` takes no arguments; dash ignores them).
+agent="$AGENT"; prompt="$PROMPT"
 [ -n "$FAKE_LOG" ] && echo "$agent" >> "$FAKE_LOG"
 [ -n "$FAKE_PROMPTS" ] && { printf '=== %s ===\n%s\n' "$agent" "$prompt" >> "$FAKE_PROMPTS"; }
 upper=$(printf '%s' "$agent" | tr 'a-z' 'A-Z')

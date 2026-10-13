@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { ask, expect, test } from './fixtures'
 
 const callsShown = async (page: import('@playwright/test').Page): Promise<number> => {
@@ -136,7 +136,7 @@ test('cancelling stops the agents and is never shown as complete', async ({ page
   await page.waitForTimeout(800)
   let left = ''
   try {
-    left = execSync(`pgrep -f '${server.dir}/bin/'`, { encoding: 'utf8' })
+    left = execFileSync('pgrep', ['-f', `${server.dir}/bin/`], { encoding: 'utf8' }) // no shell: a shell's own command line would match too
   } catch {
     left = '' // pgrep exits 1 when nothing matches
   }

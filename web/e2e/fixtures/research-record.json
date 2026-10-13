@@ -1,0 +1,296 @@
+{
+  "calls": 4,
+  "consultation": {
+    "agreements": null,
+    "assumptions": null,
+    "disagreements": "The agents disagree on whether the vendor figure or the bench measurement should be trusted.",
+    "evidence_limitations": null,
+    "invocations": {},
+    "manual_overrides": [],
+    "mode": "research",
+    "provider_failures": 0,
+    "recommendation": null,
+    "research": {
+      "assessors": [
+        "beta"
+      ],
+      "budget": {
+        "claims_reused": 0,
+        "fetch_attempts": 3,
+        "fetched": 2,
+        "research_calls": 2,
+        "sources_merged": 0
+      },
+      "citations": {
+        "cited": [
+          1,
+          2
+        ],
+        "unknown_removed": [],
+        "unretrieved_removed": [
+          3
+        ]
+      },
+      "claims": [
+        {
+          "category": "product_specification",
+          "cited_by_agents": [
+            1
+          ],
+          "contradicting_independent_sources": 1,
+          "evidence": [
+            {
+              "assessed_by": [
+                "beta"
+              ],
+              "freshness": "current",
+              "offset": 0,
+              "passage": "The Model X has 100 MHz of analog bandwidth",
+              "reason": "states the figure directly",
+              "relation": "supports",
+              "source_id": 1,
+              "source_kind": "vendor_or_project_documentation",
+              "suitability": "strong",
+              "suitability_note": "the manufacturer's own specification"
+            },
+            {
+              "assessed_by": [
+                "beta"
+              ],
+              "freshness": "current",
+              "offset": 0,
+              "passage": "the Model X measured 70 MHz at the -3 dB point",
+              "reason": "states the figure directly",
+              "relation": "contradicts",
+              "source_id": 2,
+              "source_kind": "vendor_or_project_documentation",
+              "suitability": "strong",
+              "suitability_note": "the manufacturer's own specification"
+            }
+          ],
+          "id": 1,
+          "needs_external_evidence": true,
+          "originating_agents": [
+            "lead"
+          ],
+          "status": "CONTRADICTED",
+          "supporting_independent_sources": 1,
+          "text": "The Model X has 100 MHz of analog bandwidth"
+        },
+        {
+          "category": "product_specification",
+          "cited_by_agents": [
+            1
+          ],
+          "contradicting_independent_sources": 0,
+          "evidence": [
+            {
+              "assessed_by": [
+                "beta"
+              ],
+              "freshness": "current",
+              "offset": 0,
+              "passage": "a 1 GSa/s sample rate",
+              "reason": "states the figure directly",
+              "relation": "supports",
+              "source_id": 1,
+              "source_kind": "vendor_or_project_documentation",
+              "suitability": "strong",
+              "suitability_note": "the manufacturer's own specification"
+            }
+          ],
+          "id": 2,
+          "needs_external_evidence": true,
+          "originating_agents": [
+            "lead"
+          ],
+          "status": "SUPPORTED",
+          "supporting_independent_sources": 1,
+          "text": "The Model X samples at 1 GSa/s"
+        }
+      ],
+      "contradictions": [
+        {
+          "claim_id": 1,
+          "contradicting_sources": [
+            2
+          ],
+          "supporting_sources": [
+            1
+          ]
+        }
+      ],
+      "depth": "standard",
+      "discovery_agent": "lead",
+      "freshness_days": 30,
+      "limitations": [
+        "One candidate page could not be retrieved."
+      ],
+      "max_sources": 6,
+      "schema": 1,
+      "search_queries": [
+        "Model X oscilloscope analog bandwidth datasheet"
+      ],
+      "sources": [
+        {
+          "content_type": "text/html",
+          "discovery": [
+            {
+              "method": "provider_tool_reported",
+              "provider": "lead"
+            }
+          ],
+          "domain": "vendor.example",
+          "excerpts": [
+            {
+              "offset": 0,
+              "text": "The Model X has 100 MHz of analog bandwidth and a 1 GSa/s sample rate."
+            }
+          ],
+          "final_url": "https://vendor.example/model-x/datasheet",
+          "http_status": 200,
+          "id": 1,
+          "kind": "vendor_or_project_documentation",
+          "kind_note": "documentation by URL shape",
+          "original_url": "https://vendor.example/model-x/datasheet",
+          "published": "2026-06-10",
+          "retrieved_at_ms": 1785542400000,
+          "status": "retrieved",
+          "text_chars": 70,
+          "text_preview": "The Model X has 100 MHz of analog bandwidth and a 1 GSa/s sample rate.",
+          "title": "Model X datasheet"
+        },
+        {
+          "content_type": "text/html",
+          "discovery": [
+            {
+              "method": "provider_tool_reported",
+              "provider": "lead"
+            }
+          ],
+          "domain": "review.example",
+          "excerpts": [
+            {
+              "offset": 0,
+              "text": "In our bench test the Model X measured 70 MHz at the -3 dB point."
+            }
+          ],
+          "final_url": "https://review.example/model-x",
+          "http_status": 200,
+          "id": 2,
+          "kind": "vendor_or_project_documentation",
+          "kind_note": "documentation by URL shape",
+          "original_url": "https://review.example/model-x",
+          "published": "2026-06-10",
+          "retrieved_at_ms": 1785542400000,
+          "status": "retrieved",
+          "text_chars": 65,
+          "text_preview": "In our bench test the Model X measured 70 MHz at the -3 dB point.",
+          "title": "Model X review"
+        },
+        {
+          "content_type": "text/html",
+          "discovery": [
+            {
+              "method": "provider_tool_reported",
+              "provider": "lead"
+            }
+          ],
+          "domain": "forum.example",
+          "error": "the page answered 404",
+          "error_kind": "http_error",
+          "final_url": "https://forum.example/thread/42",
+          "id": 3,
+          "kind": "vendor_or_project_documentation",
+          "kind_note": "documentation by URL shape",
+          "original_url": "https://forum.example/thread/42",
+          "published": "2026-06-10",
+          "status": "inaccessible",
+          "text_chars": 0,
+          "text_preview": "",
+          "title": "Forum thread"
+        }
+      ],
+      "subquestions": [
+        "What is the analog bandwidth of the Model X?"
+      ],
+      "web_requested": "on"
+    },
+    "rounds_run": 1,
+    "routing": null,
+    "schema": 1,
+    "stage_ms": {},
+    "strategy": "panel",
+    "token_usage": null,
+    "unresolved_disagreement": true
+  },
+  "conversation": 1,
+  "coordinator": "lead",
+  "created_at_ms": 1785542400000,
+  "duration_ms": 2800,
+  "error": null,
+  "final_answer": "## Answer\n\nThe vendor states 100 MHz [1], but an independent bench test measured 70 MHz [2]; the claim is contradicted.\n\n## Significant disagreements\n\nVendor figure versus bench measurement.",
+  "id": "20260801-120000-000001",
+  "initial_proposal": "",
+  "participants": [
+    "beta",
+    "gamma"
+  ],
+  "question": "Does the Model X really have 100 MHz of bandwidth?",
+  "rounds_planned": 1,
+  "schema": 1,
+  "skipped": [],
+  "status": "complete",
+  "steps": [
+    {
+      "agent": "lead",
+      "duration_ms": 900,
+      "error": null,
+      "error_kind": null,
+      "offset_ms": 0,
+      "ok": true,
+      "phase": "perspective",
+      "round": 0,
+      "settings": null,
+      "text": "The datasheet says 100 MHz [1]."
+    },
+    {
+      "agent": "beta",
+      "duration_ms": 1200,
+      "error": null,
+      "error_kind": null,
+      "offset_ms": 0,
+      "ok": true,
+      "phase": "perspective",
+      "round": 0,
+      "settings": null,
+      "text": "A bench test measured 70 MHz [2]."
+    },
+    {
+      "agent": "gamma",
+      "duration_ms": 1500,
+      "error": "timed out after 1s",
+      "error_kind": "timeout",
+      "offset_ms": 0,
+      "ok": false,
+      "phase": "perspective",
+      "round": 0,
+      "settings": null,
+      "text": null
+    },
+    {
+      "agent": "lead",
+      "duration_ms": 800,
+      "error": null,
+      "error_kind": null,
+      "offset_ms": 2000,
+      "ok": true,
+      "phase": "synthesis",
+      "round": 1,
+      "settings": null,
+      "text": "## Answer\n\nThe vendor states 100 MHz [1], but an independent bench test measured 70 MHz [2]; the claim is contradicted.\n\n## Significant disagreements\n\nVendor figure versus bench measurement."
+    }
+  ],
+  "synthesized": true,
+  "warnings": []
+}

@@ -1,0 +1,1673 @@
+{
+  "format": "ai-orchestra-eval-dataset",
+  "format_version": 1,
+  "id": "starter",
+  "title": "AI Orchestra starter evaluation set (synthetic)",
+  "dataset_version": "1.0.1",
+  "provenance": {
+    "authors": [
+      "AI Orchestra project"
+    ],
+    "created": "2026-10-12",
+    "synthetic": true,
+    "description": "Twelve small cases, one per category, to exercise the evaluation machinery. Every product, study and page in it is invented for this dataset (the .invalid domains do not exist); reference facts are either supplied in the case or follow from arithmetic and textbook definitions.",
+    "notes": "The recorded responses are FIXTURES written by hand, some deliberately wrong, so that the checks have something to find. They are not output of any model and say nothing about how Claude, Codex or Google perform. Latency and call counts are left empty on purpose. 1.0.1: three checks were corrected after the first live run showed they matched the question's own wording or missed a paraphrase (science-claim, uncertain-price, followup-channels); no case, question or fixture response changed."
+  },
+  "cases": [
+    {
+      "id": "fact-ohm",
+      "category": "simple_fact",
+      "question": "A 12 V supply drives a 4 ohm resistor. What current flows?",
+      "instructions": "Check the number and the unit. Prefer the shorter answer when both are correct.",
+      "objective": true,
+      "reference_basis": "Ohm's law I = V / R; 12 / 4 = 3.",
+      "expect": {
+        "required": [
+          {
+            "id": "amps",
+            "description": "The current is 3 A",
+            "any_of": [
+              "3 A",
+              "3 amps",
+              "3 amperes"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "wrong",
+            "description": "12 A or 48 A",
+            "any_of": [
+              "12 A",
+              "48 A"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "clarity"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "The current is 3 A (12 V / 4 ohm).",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "About 48 A.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "I = V/R = 12/4 = 3 A.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nBy Ohm's law I = V / R = 12 V / 4 ohm = 3 A.\n\n## Areas of agreement\n\nAll agents agree on 3 A.\n\n## Assumptions\n\nAn ideal source and a purely resistive load.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "reason-series",
+      "category": "multi_step_reasoning",
+      "question": "A 8 V source drives a 100 ohm and a 300 ohm resistor in series. What is the current, and how much power does the 300 ohm resistor dissipate?",
+      "instructions": "Both numbers must be right. The power follows from the current.",
+      "objective": true,
+      "reference_basis": "Series resistance 400 ohm, I = 8/400 = 0.02 A; P = I^2 R = 0.0004 * 300 = 0.12 W.",
+      "expect": {
+        "required": [
+          {
+            "id": "current",
+            "description": "20 mA",
+            "any_of": [
+              "20 mA",
+              "0.02 A"
+            ]
+          },
+          {
+            "id": "power",
+            "description": "0.12 W",
+            "any_of": [
+              "0.12 W",
+              "120 mW"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "parallel",
+            "description": "treats them as parallel",
+            "any_of": [
+              "parallel"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "logical_consistency"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "The total resistance is 400 ohm, so the current is 0.02 A (20 mA). The 300 ohm resistor dissipates I^2R = 0.12 W.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "The current is 20 mA. The 300 ohm resistor dissipates 0.6 W.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Series: 100 + 300 = 400 ohm. I = 8/400 = 20 mA. P(300 ohm) = (0.02)^2 * 300 = 0.12 W (120 mW).",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nCurrent: 8 V / 400 ohm = 0.02 A = 20 mA. Power in the 300 ohm resistor: 0.02^2 x 300 = 0.12 W.\n\n## Significant disagreements\n\nOne agent first computed 0.6 W; the review corrected it to 0.12 W.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "tech-aliasing",
+      "category": "technical_explanation",
+      "mode": "learn",
+      "question": "Explain aliasing in an oscilloscope to a beginner and say what sample rate I need for a 10 kHz signal.",
+      "instructions": "The explanation must state the sampling rule correctly and address the common misunderstanding.",
+      "objective": true,
+      "reference_basis": "The Nyquist-Shannon sampling theorem: the sample rate must exceed twice the highest frequency component.",
+      "expect": {
+        "required": [
+          {
+            "id": "rule",
+            "description": "more than twice the signal frequency",
+            "any_of": [
+              "twice",
+              "2x",
+              "two times",
+              "nyquist"
+            ]
+          },
+          {
+            "id": "number",
+            "description": "above 20 kHz",
+            "any_of": [
+              "20 kHz"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "half",
+            "description": "claims half the frequency is enough",
+            "any_of": [
+              "5 khz is enough",
+              "half the signal frequency is enough"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "conceptual_accuracy",
+        "misconceptions_identified",
+        "clarity",
+        "appropriate_difficulty"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "Aliasing happens when you sample too slowly, so a fast signal looks like a slower one. You need to sample at more than twice the highest frequency, so for 10 kHz use above 20 kHz, and in practice 5 to 10 times that.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "Aliasing is when a signal looks like a different frequency. A sample rate equal to the signal frequency, 10 kHz, is enough to see it.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Aliasing: sampling too slowly makes a fast signal appear slow. Nyquist: sample at more than twice the highest frequency; for 10 kHz that is above 20 kHz.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Lesson\n\nAliasing is a false low frequency created by sampling too slowly. The Nyquist rule says the sample rate must exceed twice the highest frequency, so a 10 kHz signal needs above 20 kHz; use 100 kS/s or more to see the shape.\n\n## Corrections made after review\n\nA draft said the sample rate may equal the signal frequency; that is wrong.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "science-claim",
+      "category": "scientific_claim",
+      "mode": "research",
+      "question": "A website says supplement X improves memory. Using the supplied study summary, is that claim supported?",
+      "instructions": "Judge only against the supplied summary. A cited passage must say what the sentence says.",
+      "objective": true,
+      "reference_basis": "The supplied synthetic summary states no significant difference (p = 0.41).",
+      "expect": {
+        "required": [
+          {
+            "id": "nosig",
+            "description": "no significant difference",
+            "any_of": [
+              "not statistically significant",
+              "no significant difference",
+              "p = 0.41"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "improves",
+            "description": "asserts that it improves memory",
+            "any_of": [
+              "significantly improved",
+              "clearly improves memory",
+              "the claim is supported",
+              "claim is well supported"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 1,
+        "required_claims": [
+          {
+            "any_of": [
+              "not statistically significant",
+              "no significant difference"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "the trial found no significant difference"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Supplement X trial summary - synthetic",
+          "url": "https://study.example.invalid/x",
+          "published": "2026-02-10",
+          "passage": "Synthetic trial summary (written for this dataset). 40 participants took supplement X for eight weeks and 40 took a placebo. Memory test scores changed by +2.1 points with supplement X and +1.9 points with placebo; the difference was not statistically significant (p = 0.41)."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "evidence_quality",
+        "citation_accuracy",
+        "uncertainty_calibration",
+        "source_provenance"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "The supplied summary does not support the claim: the difference between supplement X and placebo was not statistically significant (p = 0.41) [1].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://study.example.invalid/x",
+              "retrieved": true,
+              "published": "2026-02-10",
+              "retrieved_at": "2026-10-12",
+              "passage": "Synthetic trial summary (written for this dataset). 40 participants took supplement X for eight weeks and 40 took a placebo. Memory test scores changed by +2.1 points with supplement X and +1.9 points with placebo; the difference was not statistically significant (p = 0.41)."
+            }
+          ]
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "Yes, supplement X clearly improves memory [1].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://study.example.invalid/x",
+              "retrieved": true,
+              "published": "2026-02-10",
+              "retrieved_at": "2026-10-12",
+              "passage": "Synthetic trial summary (written for this dataset). 40 participants took supplement X for eight weeks and 40 took a placebo. Memory test scores changed by +2.1 points with supplement X and +1.9 points with placebo; the difference was not statistically significant (p = 0.41)."
+            }
+          ]
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Not supported by this evidence: there was no significant difference from placebo (p = 0.41) [1]. One small trial cannot show the supplement is useless either.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://study.example.invalid/x",
+              "retrieved": true,
+              "published": "2026-02-10",
+              "retrieved_at": "2026-10-12",
+              "passage": "Synthetic trial summary (written for this dataset). 40 participants took supplement X for eight weeks and 40 took a placebo. Memory test scores changed by +2.1 points with supplement X and +1.9 points with placebo; the difference was not statistically significant (p = 0.41)."
+            }
+          ]
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nThe claim is not supported by the supplied trial: scores rose 2.1 vs 1.9 points and the difference was not statistically significant (p = 0.41) [1]. The result has been verified against the manufacturer's own site [4].\n\n## Evidence limitations\n\nOne trial of 80 people.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://study.example.invalid/x",
+              "retrieved": true,
+              "published": "2026-02-10",
+              "retrieved_at": "2026-10-12",
+              "passage": "Synthetic trial summary (written for this dataset). 40 participants took supplement X for eight weeks and 40 took a placebo. Memory test scores changed by +2.1 points with supplement X and +1.9 points with placebo; the difference was not statistically significant (p = 0.41)."
+            }
+          ]
+        }
+      ],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "product-scopex",
+      "category": "product_comparison",
+      "mode": "review",
+      "question": "Compare Scopex A, B and C for a student who needs a portable scope with four channels.",
+      "instructions": "Check the specifications against the supplied datasheet and that every figure is cited. The right pick is checkable from the datasheet.",
+      "objective": true,
+      "reference_basis": "The supplied synthetic datasheet lists channels, bandwidth, price and portability.",
+      "expect": {
+        "required": [
+          {
+            "id": "pick",
+            "description": "recommends Scopex B",
+            "any_of": [
+              "Scopex B"
+            ]
+          },
+          {
+            "id": "channels",
+            "description": "four channels",
+            "any_of": [
+              "4 channels",
+              "four channels"
+            ]
+          },
+          {
+            "id": "price",
+            "description": "7,400 MXN",
+            "any_of": [
+              "7,400",
+              "7400"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "portableC",
+            "description": "calls Scopex C portable",
+            "any_of": [
+              "scopex c is portable",
+              "c is a portable"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 2,
+        "required_claims": [
+          {
+            "any_of": [
+              "7,400",
+              "7400"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "the price of Scopex B"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "evidence_quality",
+        "citation_accuracy",
+        "source_provenance",
+        "completeness",
+        "recommendation_value",
+        "advantages_and_disadvantages"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "Scopex B is the best fit: it is handheld with 4 channels and 100 MHz for 7,400 MXN [1]. Scopex A has only 2 channels [1]; Scopex C has 4 channels and 200 MHz but is a benchtop unit and not portable [1].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://scopex.example.invalid/range",
+              "retrieved": true,
+              "published": "2026-03-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+            }
+          ]
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "Scopex B, with 4 channels for about 7,400 MXN, fits best. Scopex C is also portable and has 200 MHz. See https://reviews.example.invalid/scopex for details [3].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://scopex.example.invalid/range",
+              "retrieved": true,
+              "published": "2026-03-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+            }
+          ]
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Recommendation: Scopex B (handheld, 4 channels, 100 MHz, 7,400 MXN) [1]. Trade-off: Scopex C has twice the bandwidth at 11,800 MXN but is a benchtop unit [1].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://scopex.example.invalid/range",
+              "retrieved": true,
+              "published": "2026-03-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+            }
+          ]
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Recommendation\n\nScopex B: 4 channels, 100 MHz, handheld, 7,400 MXN [1].\n\n## Alternatives compared\n\nScopex A (2 channels, 70 MHz, 3,900 MXN) [1] is cheaper but has too few channels. Scopex C (200 MHz, 11,800 MXN) [1] is a benchtop unit, so not portable.\n\n## Significant disagreements\n\nOne agent preferred Scopex C for bandwidth; the others weighed portability higher.\n\n## Evidence limitations\n\nPrices are list prices from one datasheet.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://scopex.example.invalid/range",
+              "retrieved": true,
+              "published": "2026-03-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+            }
+          ]
+        }
+      ],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "decision-budget",
+      "category": "personal_decision",
+      "mode": "decision",
+      "question": "My synthetic profile: I am a student, my budget is 8,000 MXN, I need at least 4 channels, and I carry it between home and school. Which Scopex should I buy?",
+      "instructions": "Subjective scenario with stated preferences. Judge whether the stated budget and the channel requirement are respected, whether the trade-offs are fair and whether missing information is acknowledged. There is no single right answer.",
+      "objective": false,
+      "reference_basis": "",
+      "expect": {
+        "constraints": [
+          {
+            "id": "budget",
+            "description": "stays within 8,000 MXN",
+            "any_of": [
+              "8,000",
+              "8000"
+            ]
+          },
+          {
+            "id": "channels",
+            "description": "mentions the 4 channel requirement",
+            "any_of": [
+              "4 channels",
+              "four channels"
+            ]
+          }
+        ],
+        "forbidden": []
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "user_priorities_respected",
+        "instruction_adherence",
+        "alternatives_compared_fairly",
+        "costs_and_risks",
+        "recommendation_follows_evidence",
+        "missing_information_acknowledged",
+        "decision_usefulness"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "Buy the Scopex B: 4 channels, handheld, 7,400 MXN, inside your 8,000 MXN budget.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "The Scopex C is the best scope, with 200 MHz and 4 channels, for 11,800 MXN.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Scopex B fits: 7,400 MXN is within your 8,000 MXN budget, it has 4 channels and it is handheld. The remaining 600 MXN will not cover probes if they are sold separately, which I could not check.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Recommendation\n\nScopex B (7,400 MXN, 4 channels, handheld) fits your 8,000 MXN budget and your 4 channel need.\n\n## Trade-offs, costs and risks\n\nScopex A is cheaper but has 2 channels. Scopex C exceeds your budget and is not portable.\n\n## How priorities change the recommendation\n\nIf you could spend more and stay at a desk, Scopex C has more bandwidth.\n\n## Evidence limitations\n\nPrices come from one datasheet; probes and shipping were not checked.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "research-voltix",
+      "category": "multi_source_research",
+      "mode": "research",
+      "question": "Using the three supplied sources, summarise the Voltix V2: battery, weight, price and any known problem.",
+      "instructions": "Each fact must come from the right source. The answer must keep the screen problem and its status.",
+      "objective": true,
+      "reference_basis": "The three supplied synthetic sources state each fact once.",
+      "expect": {
+        "required": [
+          {
+            "id": "battery",
+            "description": "5.0 Ah",
+            "any_of": [
+              "5.0 Ah",
+              "5 Ah"
+            ]
+          },
+          {
+            "id": "weight",
+            "description": "410 g",
+            "any_of": [
+              "410 g"
+            ]
+          },
+          {
+            "id": "price",
+            "description": "2,150 MXN",
+            "any_of": [
+              "2,150",
+              "2150"
+            ]
+          },
+          {
+            "id": "screen",
+            "description": "the screen scratches and batch 3 fixed it",
+            "any_of": [
+              "scratch"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 3,
+        "required_claims": [
+          {
+            "any_of": [
+              "5.0 Ah",
+              "5 Ah"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "battery capacity"
+          },
+          {
+            "any_of": [
+              "2,150",
+              "2150"
+            ],
+            "source_ids": [
+              2
+            ],
+            "description": "price"
+          },
+          {
+            "any_of": [
+              "scratch"
+            ],
+            "source_ids": [
+              3
+            ],
+            "description": "screen problem"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Teardown notes",
+          "url": "https://teardown.example.invalid/v2",
+          "published": "2026-04-01",
+          "passage": "Teardown notes (synthetic): the Voltix V2 battery is rated 5.0 Ah and the unit weighs 410 g."
+        },
+        {
+          "id": 2,
+          "title": "Retailer listing",
+          "url": "https://shop.example.invalid/v2",
+          "published": "2026-09-30",
+          "passage": "Retailer listing (synthetic): the Voltix V2 costs 2,150 MXN and ships with two probes."
+        },
+        {
+          "id": 3,
+          "title": "Forum thread",
+          "url": "https://forum.example.invalid/v2",
+          "published": "2026-08-15",
+          "passage": "Forum thread (synthetic): users report the Voltix V2 screen scratches easily; the maker confirmed a harder glass from batch 3."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "evidence_quality",
+        "citation_accuracy",
+        "source_provenance",
+        "contradiction_handling",
+        "freshness"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "The Voltix V2 has a 5.0 Ah battery and weighs 410 g [1]. It costs 2,150 MXN and includes two probes [2]. Users report the screen scratches easily; the maker says batch 3 uses harder glass [3].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://teardown.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-04-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Teardown notes (synthetic): the Voltix V2 battery is rated 5.0 Ah and the unit weighs 410 g."
+            },
+            {
+              "id": 2,
+              "url": "https://shop.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-09-30",
+              "retrieved_at": "2026-10-12",
+              "passage": "Retailer listing (synthetic): the Voltix V2 costs 2,150 MXN and ships with two probes."
+            },
+            {
+              "id": 3,
+              "url": "https://forum.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-08-15",
+              "retrieved_at": "2026-10-12",
+              "passage": "Forum thread (synthetic): users report the Voltix V2 screen scratches easily; the maker confirmed a harder glass from batch 3."
+            }
+          ]
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "The Voltix V2 has a 5.0 Ah battery and weighs 410 g [1]. It costs 2,150 MXN [2].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://teardown.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-04-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Teardown notes (synthetic): the Voltix V2 battery is rated 5.0 Ah and the unit weighs 410 g."
+            },
+            {
+              "id": 2,
+              "url": "https://shop.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-09-30",
+              "retrieved_at": "2026-10-12",
+              "passage": "Retailer listing (synthetic): the Voltix V2 costs 2,150 MXN and ships with two probes."
+            },
+            {
+              "id": 3,
+              "url": "https://forum.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-08-15",
+              "retrieved_at": "2026-10-12",
+              "passage": "Forum thread (synthetic): users report the Voltix V2 screen scratches easily; the maker confirmed a harder glass from batch 3."
+            }
+          ]
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Battery 5.0 Ah and weight 410 g [1]; price 2,150 MXN [2]; known problem: the screen scratches easily, reportedly fixed from batch 3 [3].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://teardown.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-04-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Teardown notes (synthetic): the Voltix V2 battery is rated 5.0 Ah and the unit weighs 410 g."
+            },
+            {
+              "id": 2,
+              "url": "https://shop.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-09-30",
+              "retrieved_at": "2026-10-12",
+              "passage": "Retailer listing (synthetic): the Voltix V2 costs 2,150 MXN and ships with two probes."
+            },
+            {
+              "id": 3,
+              "url": "https://forum.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-08-15",
+              "retrieved_at": "2026-10-12",
+              "passage": "Forum thread (synthetic): users report the Voltix V2 screen scratches easily; the maker confirmed a harder glass from batch 3."
+            }
+          ]
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nThe Voltix V2 has a 5.0 Ah battery and weighs 410 g [1], costs 2,150 MXN [2], and its screen scratches easily although the maker confirmed harder glass from batch 3 [3].\n\n## Evidence limitations\n\nThe screen fix rests on a forum report of a maker statement, not on the maker's own page.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://teardown.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-04-01",
+              "retrieved_at": "2026-10-12",
+              "passage": "Teardown notes (synthetic): the Voltix V2 battery is rated 5.0 Ah and the unit weighs 410 g."
+            },
+            {
+              "id": 2,
+              "url": "https://shop.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-09-30",
+              "retrieved_at": "2026-10-12",
+              "passage": "Retailer listing (synthetic): the Voltix V2 costs 2,150 MXN and ships with two probes."
+            },
+            {
+              "id": 3,
+              "url": "https://forum.example.invalid/v2",
+              "retrieved": true,
+              "published": "2026-08-15",
+              "retrieved_at": "2026-10-12",
+              "passage": "Forum thread (synthetic): users report the Voltix V2 screen scratches easily; the maker confirmed a harder glass from batch 3."
+            }
+          ]
+        }
+      ],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "conflict-kestrel",
+      "category": "conflicting_evidence",
+      "mode": "research",
+      "question": "How much analog bandwidth does the Kestrel K1 have, according to the two supplied sources?",
+      "instructions": "The sources disagree. A good answer shows both numbers, says they conflict, and does not pick one as settled without a reason.",
+      "objective": true,
+      "reference_basis": "The two supplied synthetic sources give 70 MHz and 100 MHz.",
+      "expect": {
+        "required": [
+          {
+            "id": "both70",
+            "description": "reports 70 MHz",
+            "any_of": [
+              "70 MHz"
+            ]
+          },
+          {
+            "id": "both100",
+            "description": "reports 100 MHz",
+            "any_of": [
+              "100 MHz"
+            ]
+          },
+          {
+            "id": "conflict",
+            "description": "says they conflict",
+            "any_of": [
+              "conflict",
+              "disagree",
+              "differ",
+              "inconsistent"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "settled",
+            "description": "declares one value settled",
+            "any_of": [
+              "definitely 100 MHz",
+              "the bandwidth is exactly 70 MHz",
+              "the answer is 70 MHz"
+            ]
+          }
+        ],
+        "expects_uncertainty": false,
+        "must_cite": true,
+        "min_citations": 2
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Maker datasheet",
+          "url": "https://maker.example.invalid/k1",
+          "published": "2026-01-05",
+          "passage": "Maker datasheet (synthetic): the Kestrel K1 has 70 MHz of analog bandwidth."
+        },
+        {
+          "id": 2,
+          "title": "Lab test",
+          "url": "https://lab.example.invalid/k1",
+          "published": "2026-06-20",
+          "passage": "Lab test (synthetic): measured with a calibrated source, the Kestrel K1 reached 100 MHz of -3 dB bandwidth in our unit."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "citation_accuracy",
+        "contradiction_handling",
+        "uncertainty_calibration",
+        "freshness"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "The Kestrel K1 has 100 MHz of bandwidth [2].",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://maker.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-01-05",
+              "retrieved_at": "2026-10-12",
+              "passage": "Maker datasheet (synthetic): the Kestrel K1 has 70 MHz of analog bandwidth."
+            },
+            {
+              "id": 2,
+              "url": "https://lab.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-06-20",
+              "retrieved_at": "2026-10-12",
+              "passage": "Lab test (synthetic): measured with a calibrated source, the Kestrel K1 reached 100 MHz of -3 dB bandwidth in our unit."
+            }
+          ]
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "The maker's datasheet says 70 MHz [1], while a lab test measured 100 MHz [2]. These sources conflict, so I cannot say which is right without more evidence.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://maker.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-01-05",
+              "retrieved_at": "2026-10-12",
+              "passage": "Maker datasheet (synthetic): the Kestrel K1 has 70 MHz of analog bandwidth."
+            },
+            {
+              "id": 2,
+              "url": "https://lab.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-06-20",
+              "retrieved_at": "2026-10-12",
+              "passage": "Lab test (synthetic): measured with a calibrated source, the Kestrel K1 reached 100 MHz of -3 dB bandwidth in our unit."
+            }
+          ]
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Two sources differ: 70 MHz on the maker's datasheet [1] and 100 MHz in a lab test [2]. The lab measured one unit, so it is not conclusive.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://maker.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-01-05",
+              "retrieved_at": "2026-10-12",
+              "passage": "Maker datasheet (synthetic): the Kestrel K1 has 70 MHz of analog bandwidth."
+            },
+            {
+              "id": 2,
+              "url": "https://lab.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-06-20",
+              "retrieved_at": "2026-10-12",
+              "passage": "Lab test (synthetic): measured with a calibrated source, the Kestrel K1 reached 100 MHz of -3 dB bandwidth in our unit."
+            }
+          ]
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nThe sources disagree: the maker states 70 MHz [1]; a lab test measured 100 MHz at -3 dB [2]. A datasheet value is often a guaranteed minimum, which could explain a higher measurement, but that is a hypothesis, not something either source says.\n\n## Significant disagreements\n\nThe two sources conflict and this is not resolved.\n\n## Evidence limitations\n\nOne unit was tested.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": [
+            {
+              "id": 1,
+              "url": "https://maker.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-01-05",
+              "retrieved_at": "2026-10-12",
+              "passage": "Maker datasheet (synthetic): the Kestrel K1 has 70 MHz of analog bandwidth."
+            },
+            {
+              "id": 2,
+              "url": "https://lab.example.invalid/k1",
+              "retrieved": true,
+              "published": "2026-06-20",
+              "retrieved_at": "2026-10-12",
+              "passage": "Lab test (synthetic): measured with a calibrated source, the Kestrel K1 reached 100 MHz of -3 dB bandwidth in our unit."
+            }
+          ]
+        }
+      ],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "uncertain-price",
+      "category": "uncertainty_expected",
+      "question": "What will a Scopex B cost in the year 2030?",
+      "instructions": "No one can know this. A good answer says so, and may explain what would affect it. Asserting a number fails.",
+      "objective": true,
+      "reference_basis": "Future prices cannot be known; the case defines the correct response as stating that.",
+      "expect": {
+        "expects_uncertainty": true,
+        "forbidden": [
+          {
+            "id": "number",
+            "description": "states a price for 2030",
+            "any_of": [
+              "will cost around",
+              "will cost about",
+              "will cost approximately",
+              "will cost roughly",
+              "will be 8",
+              "will be 9",
+              "will be 6",
+              "will be 5"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "uncertainty_calibration",
+        "clarity",
+        "missing_information_acknowledged"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "A Scopex B will cost around 6,500 MXN in 2030.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "That cannot be known. Prices depend on components, exchange rates and demand; today's list price is the only anchor.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "It is not possible to know. I can say what affects it: component costs, exchange rate and competition.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nThere is no reliable way to know the 2030 price; any figure would be a guess. Factors: components, exchange rate, competition.\n\n## Evidence limitations\n\nNo source can establish a future price.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "misleading-nyquist",
+      "category": "misleading_information",
+      "question": "Since the Nyquist rate is half the signal frequency, what sample rate do I need for a 10 kHz signal?",
+      "instructions": "The question contains a false premise. A good answer corrects it before answering.",
+      "objective": true,
+      "reference_basis": "The sampling theorem requires more than twice the highest frequency.",
+      "expect": {
+        "required": [
+          {
+            "id": "correct",
+            "description": "says the premise is wrong / twice",
+            "any_of": [
+              "twice",
+              "2x",
+              "not half",
+              "incorrect",
+              "false premise"
+            ]
+          },
+          {
+            "id": "number",
+            "description": "above 20 kHz",
+            "any_of": [
+              "20 kHz"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "accepts",
+            "description": "accepts 5 kHz",
+            "any_of": [
+              "5 khz is enough",
+              "5 khz is sufficient",
+              "you need 5 khz",
+              "at least 5 khz"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "instruction_adherence",
+        "logical_consistency"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "You need at least 5 kHz, half the signal frequency.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "The premise is incorrect: the sample rate must be more than twice the highest frequency, so above 20 kHz for a 10 kHz signal.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "That premise is backwards. Nyquist requires sampling at more than twice the signal frequency: above 20 kHz.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nThe premise is wrong: the Nyquist rate is twice the highest frequency, not half. For 10 kHz you need above 20 kHz (in practice 50-100 kS/s).\n\n## Significant disagreements\n\nOne agent initially accepted the premise; the review rejected it.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "followup-channels",
+      "category": "follow_up_memory",
+      "question": "Of the two cheapest ones, which has more channels?",
+      "instructions": "The question depends on the earlier exchange. A system without the earlier context cannot answer; the answer is checkable from the earlier turn.",
+      "objective": true,
+      "reference_basis": "The earlier turn in this case lists channels and prices; the two cheapest are Scopex A and Scopex B.",
+      "history": [
+        {
+          "question": "Compare Scopex A, B and C briefly.",
+          "answer": "The Scopex B has 4 channels and costs 7,400 MXN. The Scopex A has 2 channels and costs 3,900 MXN. The Scopex C has 4 channels, costs 11,800 MXN and is a benchtop unit."
+        }
+      ],
+      "expect": {
+        "required": [
+          {
+            "id": "answer",
+            "description": "Scopex B",
+            "any_of": [
+              "Scopex B"
+            ]
+          },
+          {
+            "id": "count",
+            "description": "4 channels",
+            "any_of": [
+              "4 channels",
+              "four channels",
+              "has 4",
+              "4, compared",
+              "4 compared",
+              "4 against",
+              "4 vs"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "c",
+            "description": "names Scopex C",
+            "any_of": [
+              "scopex c has more"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "clarity"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "I do not have the earlier comparison, so I cannot say which ones you mean.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "Of Scopex A (3,900 MXN) and Scopex B (7,400 MXN), Scopex B has more channels: 4 against 2.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "Scopex B: 4 channels, against 2 on Scopex A.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex",
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nThe two cheapest are Scopex A (3,900 MXN, 2 channels) and Scopex B (7,400 MXN, 4 channels). Scopex B has more channels.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "mode": null,
+      "web": false,
+      "evidence": []
+    },
+    {
+      "id": "cheap-dc",
+      "category": "fewer_calls_sufficient",
+      "question": "What does DC stand for in electronics?",
+      "instructions": "A single agent is enough. Extra agents add cost, not quality; compare correctness and calls.",
+      "objective": true,
+      "reference_basis": "Standard terminology: DC is direct current.",
+      "expect": {
+        "required": [
+          {
+            "id": "dc",
+            "description": "direct current",
+            "any_of": [
+              "direct current"
+            ]
+          }
+        ],
+        "single_agent_sufficient": true
+      },
+      "criteria": [
+        "factual_correctness",
+        "clarity"
+      ],
+      "recorded": [
+        {
+          "arm": "single:codex",
+          "provenance": "fixture",
+          "answer": "DC stands for direct current.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "single:claude",
+          "provenance": "fixture",
+          "answer": "Direct current.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "balanced",
+          "provenance": "fixture",
+          "answer": "DC stands for direct current: current that flows in one direction.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "codex"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        },
+        {
+          "arm": "thorough",
+          "provenance": "fixture",
+          "answer": "## Answer\n\nDC stands for direct current.\n\n## Areas of agreement\n\nAll agents agree.\n\n## Assumptions\n\nIn electronics, not in other fields.\n\n## Evidence limitations\n\nNone: a standard term.",
+          "status": "complete",
+          "latency_ms": null,
+          "invocations": null,
+          "agents": [
+            "claude",
+            "codex",
+            "google"
+          ],
+          "context_chars": null,
+          "input_tokens": null,
+          "sources": []
+        }
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    }
+  ]
+}

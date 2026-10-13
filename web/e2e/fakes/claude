@@ -1,0 +1,9 @@
+#!/bin/sh
+here=$(dirname "$0")
+case "$1" in
+  --version) echo "9.9.9 (Fake Claude)"; exit 0;;
+  auth) echo '{"loggedIn":true,"authMethod":"claude.ai","subscriptionType":"pro"}'; exit 0;;
+esac
+prompt=$(cat)
+. "$here/body.sh" claude "$prompt"
+printf '{"type":"result","subtype":"success","is_error":false,"result":"%s","session_id":"s1","usage":{"input_tokens":3,"output_tokens":4}}\n' "$BODY"

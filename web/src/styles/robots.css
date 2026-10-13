@@ -1,0 +1,53 @@
+/* Pixel robots: colours come from the agent tokens, motion uses steps() to stay pixel-like. */
+.robot { display: block; image-rendering: pixelated; overflow: visible; }
+.robot .px-o { fill: var(--px-o); } .robot .px-b { fill: var(--px-b); } .robot .px-w { fill: var(--px-w, var(--px-b)); }
+.robot .px-v { fill: var(--px-v, var(--px-o)); } .robot .px-p { fill: var(--px-p, var(--px-l)); } .robot .px-c { fill: var(--px-c, var(--px-l)); }
+.robot .px-e { fill: var(--px-e); } .robot .px-m { fill: var(--px-mouth, var(--px-e)); } .robot .px-x { fill: var(--danger); }
+.robot-claude { --px-o: color-mix(in srgb, var(--claude) 38%, #1a0f06); --px-b: var(--claude); --px-l: #ffd9a8; --px-p: #ffe2b8; --px-e: #2a170a; }
+.robot-codex { --px-o: color-mix(in srgb, var(--codex) 40%, #04201b); --px-b: var(--codex); --px-v: #0b2a26; --px-c: #bff6e8; --px-l: #bff6e8; --px-e: #8ff5da; --px-mouth: #0b2a26; }
+.robot-google { --px-o: color-mix(in srgb, var(--google) 45%, #0e0a2a); --px-b: #5b8def; --px-w: var(--google); --px-p: #ffd35c; --px-l: #fff; --px-e: #ffffff; --px-mouth: #151039; }
+.robot-google .px-e-r { fill: #ffd35c; }
+.robot-other { --px-o: #30384f; --px-b: #7d89a8; --px-l: #cdd5e8; --px-e: #151a28; }
+:root[data-theme='light'] .robot-codex { --px-b: #1fa88e; }
+:root[data-theme='light'] .robot-claude { --px-b: #e0904f; }
+
+.robot-st-idle .robot-body, .robot-st-waiting .robot-body { animation: px-bob 3.2s steps(1) infinite; }
+.robot-st-thinking .robot-body { animation: px-bob 1.2s steps(1) infinite; }
+.robot-st-speaking .robot-body { animation: px-bob 0.6s steps(1) infinite; }
+.robot-st-thinking .px-dots rect { fill: var(--text-muted); animation: px-blink 1.2s steps(1) infinite; }
+.robot-st-thinking .px-dots rect:nth-child(2) { animation-delay: 0.3s; } .robot-st-thinking .px-dots rect:nth-child(3) { animation-delay: 0.6s; }
+.robot-st-reviewing .px-lens rect { fill: var(--text-muted); }
+.robot-st-finished .px-spark rect { fill: var(--ok); animation: px-blink 1.6s steps(1) infinite; }
+.robot-st-error .robot-body { animation: px-shake 0.5s steps(1) 2; }
+.robot-st-waiting { opacity: 0.72; }
+.px-talk { animation: px-talk 0.5s steps(1) infinite; }
+.robot-claude.robot-st-thinking .px-p { animation: px-blink 0.9s steps(1) infinite; }
+.robot-codex.robot-st-thinking .px-c { animation: px-blink 0.7s steps(1) infinite; }
+.robot-google.robot-st-thinking .px-e-l { animation: px-blink 1s steps(1) infinite; }
+
+@keyframes px-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.25px); } }
+@keyframes px-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+@keyframes px-talk { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.5); } }
+@keyframes px-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-0.3px); } 75% { transform: translateX(0.3px); } }
+.px-talk { transform-box: fill-box; transform-origin: top; }
+.robot-body { transform-box: fill-box; }
+
+/* Alternative colours chosen by the user (palette 1 and 2), and accessories. */
+.robot .px-acc { fill: var(--px-acc, #f4f4f4); stroke: none; }
+.robot .px-cap { fill: var(--px-cap, #d6453d); }
+.robot-claude.pal-1 { --px-b: #e07a8a; --px-o: #4a1b25; --px-l: #ffd0d8; --px-p: #ffd0d8; }
+.robot-claude.pal-2 { --px-b: #d9b04a; --px-o: #43320d; --px-l: #fff0b8; --px-p: #fff0b8; }
+.robot-codex.pal-1 { --px-b: #7bc34a; --px-o: #1d3a0e; --px-v: #14260a; --px-e: #d6ff9a; --px-c: #e6ffc2; --px-l: #e6ffc2; }
+.robot-codex.pal-2 { --px-b: #3aa0d8; --px-o: #0c2f46; --px-v: #09202f; --px-e: #a8e0ff; --px-c: #c9ecff; --px-l: #c9ecff; }
+.robot-google.pal-1 { --px-b: #e4609c; --px-w: #8b7ae8; --px-o: #3a1030; --px-p: #ffe27a; }
+.robot-google.pal-2 { --px-b: #4cbf8a; --px-w: #3a8ad0; --px-o: #0f3326; --px-p: #ffd35c; }
+.robot-other.pal-1, .robot-other.pal-2 { --px-b: #9aa8c8; }
+
+/* Walk cycle: two leg poses swapped in steps; standing still shows only the first. */
+.robot .legs-b { opacity: 0; }
+.robot.walking .legs-a { animation: leg-a 0.5s steps(1) infinite; }
+.robot.walking .legs-b { animation: leg-b 0.5s steps(1) infinite; }
+.robot.walking .robot-body { animation: px-bob 0.5s steps(1) infinite; }
+.robot.flip { transform: scaleX(-1); }
+@keyframes leg-a { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes leg-b { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }

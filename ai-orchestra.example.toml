@@ -1,0 +1,190 @@
+# AI Orchestra configuration example.
+#
+# Copy to one of (first match wins):
+#   --config <file>
+#   $AI_ORCHESTRA_CONFIG
+#   ./ai-orchestra.toml
+#   ~/.config/ai-orchestra/config.toml   (or $XDG_CONFIG_HOME/ai-orchestra/config.toml)
+#
+# Every key is optional; the values below are the defaults unless noted.
+# Unknown keys are rejected so typos do not pass silently.
+
+[general]
+# Which agent leads collaboration workflows (used by the debate milestone).
+# Any provider id or alias works; nothing is hardcoded.
+coordinator = "claude"
+
+# Default per-request timeout. On expiry the agent's whole process group is
+# terminated (SIGTERM, then SIGKILL after 2s).
+timeout_secs = 300
+
+# Hard cap on agent processes running at once, across all commands.
+max_concurrent_agents = 3
+
+# Captured stdout is truncated beyond this (4 MiB). Truncated structured
+# output is reported as an error rather than silently misparsed.
+max_output_bytes = 4194304
+
+# Prompts larger than this are rejected (1 MiB).
+max_prompt_bytes = 1048576
+
+# Remove API-key style variables (ANTHROPIC_API_KEY, OPENAI_API_KEY,
+# GEMINI_API_KEY, ...) from the environment of agent processes so each CLI
+# uses its subscription login instead of usage-billed API access.
+# Leave this on unless you know why you are turning it off.
+scrub_api_key_env = true
+
+# Allow running ai-orchestra from inside one of the agents it drives
+# (e.g. calling Claude Code from within a Claude Code session). Off by
+# default to prevent recursive agent calls.
+allow_nested = false
+
+# Delegation depth at which ai-orchestra refuses to start. A person runs it at depth 0; every agent
+# it starts runs one level deeper (AI_ORCHESTRA_DEPTH). With 1, an agent started by ai-orchestra
+# cannot start ai-orchestra (or its MCP server) again.
+max_depth = 1
+
+# `ai-orchestra consult` has no settings of its own: it uses general.coordinator, the provider
+# settings below, and the [debate] limits (total_timeout_secs, save, history_dir).
+[debate]
+# Review rounds, 1 or 2 (default 1; two is the maximum).
+#
+# A round is one parallel pass in which every reviewer answers once:
+#   round 1: each reviewer critiques the coordinator's proposal independently
+#            (reviewers never see each other's work).
+#   round 2: each reviewer reads ALL round-1 reviews and reconsiders its position.
+# After the last round the coordinator writes the final synthesis.
+# Agent calls: 1 proposal + rounds x reviewers + 1 synthesis
+# (4 with two agents and one round; 6 with three agents and two rounds).
+rounds = 1
+
+# Wall-clock budget for the whole debate; all agents are stopped on expiry.
+total_timeout_secs = 1800
+
+# Save every debate as JSON (owner-only) for `ai-orchestra history` / `show <id>`.
+save = true
+# history_dir = "~/.local/share/ai-orchestra/debates"
+
+# Model and reasoning effort are optional for every provider. When unset,
+# ai-orchestra passes nothing and the CLI uses its own configuration
+# (~/.claude/settings.json, ~/.codex/config.toml, agy's default).
+# Precedence: --model/--effort on the command line > this file > the CLI's own.
+#
+# Valid effort levels (checked at startup and per request):
+#   claude: low, medium, high, xhigh, max            (from `claude --help`)
+#   google: low, medium, high, xhigh, max            (from `agy --help`; agy's model
+#           names also encode effort, e.g. gemini-3.8-flash-low - see `agy models`)
+#   codex:  depends on the model (e.g. low..max, some also ultra); Codex rejects
+#           a level its model does not support
+
+[providers.claude]
+enabled = true
+# Name looked up on PATH, or a path ("~/" is expanded).
+# executable = "/Users/me/.local/bin/claude"
+# model = "sonnet"            # an alias (sonnet, opus, ...) or a full model name
+# effort = "high"
+# Extra arguments appended verbatim. These come from you, never from an agent.
+# extra_args = ["--effort", "low"]
+# timeout_secs = 600
+
+[providers.codex]
+enabled = true
+# executable = "codex"
+# model = "gpt-6-luna"        # see ~/.codex/models_cache.json for what your login offers
+# effort = "low"
+# extra_args = ["-c", "model_reasoning_effort=\"low\""]
+
+# Google Antigravity CLI. Also addressable as `agy` or `antigravity`.
+[providers.google]
+enabled = true
+# executable = "agy"
+# model = "gemini-3.8-flash-low"   # list yours with `agy models`
+# effort = "medium"
+
+# Web research for `ai-orchestra consult` (Milestone 5). The defaults are the safe ones: HTTPS only,
+# robots.txt honored, public addresses only. None of these settings can allow local or private
+# addresses; there is deliberately no such option.
+[research]
+# Time allowed for one page, in seconds (1-120).
+# fetch_timeout_secs = 15
+# Time allowed for finding and retrieving all sources, in seconds (1-3600). When it runs out, the
+# sources retrieved so far are used.
+# total_timeout_secs = 300
+# Largest page body read (1 KiB-16 MiB) and most text kept from one page (1 KiB-2 MiB).
+# max_page_bytes = 2097152
+# max_text_bytes = 204800
+# Pages fetched at the same time (1-8) and redirects followed (0-10).
+# max_concurrent_fetches = 4
+# max_redirects = 5
+# Honor robots.txt. A site that forbids fetching, or whose robots.txt cannot be read, is not fetched.
+# respect_robots = true
+# Also fetch plain http:// pages (default: HTTPS only).
+# allow_http = false
+# Sent to sites; its first word is matched against robots.txt.
+# user_agent = "ai-orchestra/0.6 (local research tool; respects robots.txt)"
+
+# Smart orchestration (Milestone 6): how much AI work a consultation uses. Every value can be
+# overridden per request (--strategy, --max-agent-calls, --max-duration, --max-parallel).
+[smart]
+# auto | fast | balanced | thorough | off. `off` keeps the fixed Milestone 4/5 workflow: every usable
+# agent answers independently, then the review rounds, then the synthesis.
+# default_strategy = "auto"
+# Most agent calls one consultation may start (research planning and verification included).
+# max_agent_calls = 8
+# Wall-clock limit for one consultation, in seconds. Never above debate.total_timeout_secs.
+# max_duration_secs = 600
+# Most of one consultation's agent calls running at the same time (the global limit is
+# general.max_concurrent_agents).
+# max_parallel = 3
+# Most characters of agent output one consultation accepts before it stops launching work.
+# max_response_chars = 2000000
+# Keep a small local file with how each provider performed (durations and outcomes only: no
+# prompts, answers or credentials), used to order agents. Default location: next to the saved debates.
+# profiles = true
+# profiles_path = "~/.local/share/ai-orchestra/profiles.json"
+# History older than this many days is ignored; latency is used after this many recent answers.
+# profile_max_age_days = 14
+# profile_min_samples = 3
+# Weight of the newest call in the moving average (0 to 1].
+# profile_ewma_alpha = 0.3
+# A provider that failed this many calls in a row is tried last for a day (never excluded).
+# profile_degraded_after_failures = 3
+
+# Memory and context (Milestone 7): what earlier consultations remember, and how much of it is sent.
+# A local SQLite file; no network, no cloud, no telemetry. It is owner-only but NOT encrypted at rest.
+[memory]
+# auto (session + project) | off (nothing recalled or remembered; the database is not created) |
+# session | project | global. `--memory` overrides it per request. `off` also disables the MCP memory tools.
+# default = "auto"
+# Where the database lives. Default: next to the saved debates (.../ai-orchestra/memory.db).
+# path = "~/.local/share/ai-orchestra/memory.db"
+# A name that identifies this project instead of the working directory's path.
+# project = "electronics-lab"
+# Most (estimated: bytes / 3) tokens of recalled context placed before a question. `--context-budget` overrides.
+# context_budget_tokens = 2000
+# A session unused for this many hours is not continued automatically (`--session` still reaches it).
+# session_idle_hours = 24
+# Session memory older than this many days is removed (0 keeps it for good).
+# session_retention_days = 90
+# Let `auto` also read memories that apply to every project (`--memory global` always does).
+# auto_include_global = false
+# How many of the latest consultations of the session are always candidates.
+# recent_turns = 2
+# Days a remembered fact stays "current": specifications / versions, prices, anything else checked against
+# a source, and the window used instead when the question asks for the latest information.
+# freshness_time_sensitive_days = 30
+# freshness_price_days = 14
+# freshness_general_days = 365
+# freshness_fresh_question_days = 7
+# Let the MCP server save and forget memories when the host says the user asked for it. Reading is always
+# allowed; writing is not unless this is true. Global memory can never be written through MCP.
+# allow_mcp_writes = false
+
+# The local web interface (`ai-orchestra web`): a browser UI served from this machine only.
+[web]
+# Port of the local server. The address is 127.0.0.1; `--allow-non-local` is required to bind anything else.
+# port = 8765
+# Consultations the browser may have running at once (each can use several agent calls).
+# max_concurrent_consultations = 2
+# Extra Host header values accepted besides 127.0.0.1, localhost and [::1] (only for a deliberate non-local bind).
+# extra_allowed_hosts = []

@@ -1,0 +1,695 @@
+{
+  "format": "ai-orchestra-eval-dataset",
+  "format_version": 1,
+  "id": "hard",
+  "title": "AI Orchestra harder cases (synthetic)",
+  "dataset_version": "1.0.0",
+  "provenance": {
+    "authors": [
+      "AI Orchestra project"
+    ],
+    "created": "2026-10-12",
+    "synthetic": true,
+    "description": "Twelve cases chosen because a careless answer fails them: arithmetic with a classic slip (forgetting 2 pi, adding amp-hours in a series pack, using the power formula for voltage gain, ignoring an LED's drop), a resistor exactly at its rating, a false premise, a question the supplied datasheet cannot answer, constraints that cannot all be met, a preference that changed, a newer source that supersedes an older one, and two studies that disagree. Every product, study and page is invented (the .invalid domains do not exist); the reference is supplied in the case or follows from arithmetic. Sources the case supplies are put in the prompt.",
+    "notes": "No recorded responses: for live runs and blind comparison. Written BEFORE any answer to it was seen, and each case's checks are tested against plausible correct and incorrect answers (tests/eval.rs) because the first dataset's checks had to be corrected after a live run. It still tests reasoning, calibration and use of supplied evidence, not web research accuracy. Difficulty is a hypothesis: a case that every arm passes does not discriminate and says so in the report."
+  },
+  "cases": [
+    {
+      "id": "hard-rc-cutoff",
+      "category": "multi_step_reasoning",
+      "question": "An RC low-pass filter uses R = 1.6 kilohm and C = 100 nF. What is its -3 dB cutoff frequency in hertz, to the nearest hertz? Show the steps.",
+      "instructions": "One number, with the right formula (f = 1 / (2 pi R C)). The usual slip is to forget the 2 pi and answer 6,250.",
+      "objective": true,
+      "reference_basis": "f = 1 / (2 x pi x 1600 x 100e-9) = 994.7 Hz, which is 995 Hz to the nearest hertz.",
+      "expect": {
+        "required": [
+          {
+            "id": "fc",
+            "description": "about 995 Hz",
+            "any_of": [
+              "995",
+              "994.7",
+              "994.8",
+              "994 hz"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "no2pi",
+            "description": "forgets the 2 pi",
+            "any_of": [
+              "6250 hz",
+              "6,250 hz",
+              "6.25 khz",
+              "6,250 rad"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "logical_consistency",
+        "clarity"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-battery-runtime",
+      "category": "multi_step_reasoning",
+      "question": "A battery pack is made of 4 cells in series, each 3.7 V and 2.5 Ah. A device draws 12 W continuously from it. Ignoring all losses, how long does the pack run, in hours?",
+      "instructions": "Series cells add voltage, not capacity: 14.8 V x 2.5 Ah = 37 Wh, so 37 / 12 = 3.08 h. The usual slip is to add the amp-hours.",
+      "objective": true,
+      "reference_basis": "Energy = 4 x 3.7 V x 2.5 Ah = 37 Wh; 37 Wh / 12 W = 3.083 h.",
+      "expect": {
+        "required": [
+          {
+            "id": "hours",
+            "description": "about 3.08 h",
+            "any_of": [
+              "3.08",
+              "3.1 h",
+              "3.1 hours",
+              "3 h 5",
+              "3 hours 5",
+              "3 hours and 5",
+              "3.083"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "added",
+            "description": "adds the amp-hours",
+            "any_of": [
+              "12.3 h",
+              "12.33",
+              "12.3 hours"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "logical_consistency"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-decibel-gain",
+      "category": "multi_step_reasoning",
+      "question": "An amplifier has a voltage gain of 40 dB. The input is 5 mV rms. What is the output voltage rms?",
+      "instructions": "40 dB of voltage gain is a factor of 100, so 0.5 V. The usual slip is to use the power formula (10 dB per decade) and answer 50 V.",
+      "objective": true,
+      "reference_basis": "Voltage gain in dB = 20 log10(Vout / Vin); 40 dB = x100; 5 mV x 100 = 500 mV.",
+      "expect": {
+        "required": [
+          {
+            "id": "vout",
+            "description": "0.5 V",
+            "any_of": [
+              "0.5 v",
+              "500 mv",
+              "0.500 v",
+              "0.5 volts",
+              "500 millivolts",
+              "half a volt"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "clarity"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-led-current",
+      "category": "multi_step_reasoning",
+      "question": "A 3.3 V microcontroller pin drives an LED through a 220 ohm resistor. The LED drops 2.0 V when lit. What current flows, in milliamps?",
+      "instructions": "The resistor sees 3.3 - 2.0 = 1.3 V, so 5.9 mA. The usual slip is to ignore the LED's drop (15 mA).",
+      "objective": true,
+      "reference_basis": "I = (3.3 V - 2.0 V) / 220 ohm = 5.909 mA.",
+      "expect": {
+        "required": [
+          {
+            "id": "ma",
+            "description": "about 5.9 mA",
+            "any_of": [
+              "5.9 ma",
+              "5.91 ma",
+              "5.9ma",
+              "0.0059 a",
+              "5.91ma"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "logical_consistency"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-resistor-rating",
+      "category": "technical_explanation",
+      "question": "A resistor is rated 0.25 W. Is it safe to connect a 100 ohm one across a 5 V supply?",
+      "instructions": "P = V^2 / R = 0.25 W, exactly the rating: no margin. A good answer computes it and says it is at the limit and should be derated (use a higher-rated part), rather than just saying 'yes' or 'no'.",
+      "objective": true,
+      "reference_basis": "P = 5^2 / 100 = 0.25 W, equal to the rating.",
+      "expect": {
+        "required": [
+          {
+            "id": "power",
+            "description": "0.25 W",
+            "any_of": [
+              "0.25 w",
+              "250 mw",
+              "0.25 watts",
+              "one quarter watt",
+              "quarter-watt",
+              "1/4 w"
+            ]
+          },
+          {
+            "id": "limit",
+            "description": "says it is at the limit / no margin",
+            "any_of": [
+              "at the limit",
+              "no margin",
+              "exactly",
+              "equal to",
+              "derat",
+              "no headroom",
+              "right at",
+              "at its rating",
+              "at the rating",
+              "full rating",
+              "rated power"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "plenty",
+            "description": "claims comfortable margin",
+            "any_of": [
+              "plenty of margin",
+              "well within",
+              "comfortably within",
+              "safely within its rating"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "clarity"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-premise-portable",
+      "category": "misleading_information",
+      "mode": "review",
+      "question": "The Scopex C is portable and has four channels, right? What does it cost? Use the supplied datasheet.",
+      "instructions": "The question contains a false premise: the datasheet says Scopex C is a benchtop unit and is not portable. A good answer corrects it, then gives the price (11,800 MXN).",
+      "objective": true,
+      "reference_basis": "The supplied datasheet states Scopex C is benchtop and not portable, 4 channels, 11,800 MXN.",
+      "expect": {
+        "required": [
+          {
+            "id": "correction",
+            "description": "says C is not portable / is benchtop",
+            "any_of": [
+              "not portable",
+              "benchtop",
+              "bench-top",
+              "isn't portable",
+              "is not a portable"
+            ]
+          },
+          {
+            "id": "price",
+            "description": "11,800 MXN",
+            "any_of": [
+              "11,800",
+              "11800"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 1
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "citation_accuracy",
+        "instruction_adherence"
+      ],
+      "web": false,
+      "history": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-missing-input-voltage",
+      "category": "uncertainty_expected",
+      "mode": "review",
+      "question": "Using only the supplied datasheet, what is the maximum input voltage of the Scopex B?",
+      "instructions": "The datasheet does not state it. A good answer says it is not stated and does not supply a number from general knowledge.",
+      "objective": true,
+      "reference_basis": "The supplied datasheet lists channels, bandwidth, price and portability only.",
+      "expect": {
+        "expects_uncertainty": true,
+        "forbidden": [
+          {
+            "id": "number",
+            "description": "supplies a voltage",
+            "any_of": [
+              "300 v",
+              "400 v",
+              "600 v",
+              "1000 v",
+              "150 v",
+              "200 v",
+              "50 v max",
+              "cat ii",
+              "cat iii",
+              "cat iv"
+            ]
+          }
+        ],
+        "must_cite": false
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "uncertainty_calibration",
+        "factual_correctness",
+        "missing_information_acknowledged"
+      ],
+      "web": false,
+      "history": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-no-feasible-option",
+      "category": "personal_decision",
+      "mode": "decision",
+      "question": "My synthetic profile: my budget is 5,000 MXN, I need at least 4 channels, and it must be handheld. Which Scopex should I buy? Use the supplied datasheet.",
+      "instructions": "No model meets all three: A is within budget but has 2 channels; B has 4 channels and is handheld but costs 7,400 MXN; C is not handheld. A good answer says none meets all constraints and says which constraint would have to give way, instead of forcing a pick.",
+      "objective": true,
+      "reference_basis": "Checkable from the supplied datasheet: price, channels and form factor of each model.",
+      "expect": {
+        "required": [
+          {
+            "id": "none",
+            "description": "says no model meets all",
+            "any_of": [
+              "none of",
+              "no model",
+              "no scopex",
+              "neither",
+              "cannot satisfy",
+              "can't satisfy",
+              "no option",
+              "not possible",
+              "doesn't exist",
+              "no single"
+            ]
+          },
+          {
+            "id": "b",
+            "description": "names B's price as the obstacle",
+            "any_of": [
+              "7,400",
+              "7400"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "forces",
+            "description": "claims one fits all",
+            "any_of": [
+              "fits all your",
+              "meets all your requirements",
+              "scopex b fits your budget",
+              "within your 5,000 mxn budget"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 1
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "user_priorities_respected",
+        "missing_information_acknowledged",
+        "citation_accuracy",
+        "decision_usefulness"
+      ],
+      "web": false,
+      "history": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-changed-preference",
+      "category": "follow_up_memory",
+      "mode": "decision",
+      "question": "Given my situation now, which Scopex should I buy?",
+      "instructions": "The answer must use the latest budget (8,000 MXN, which makes Scopex B affordable) and not the superseded one (5,000 MXN, which led to 'none fits'). The need for 4 channels still stands.",
+      "objective": true,
+      "reference_basis": "The earlier turns in this case give the preferences and the datasheet; the later budget replaces the earlier one.",
+      "history": [
+        {
+          "question": "My budget is 5,000 MXN and I need at least 4 channels. Which Scopex fits?",
+          "answer": "None of the three fits both: Scopex A is within budget but has 2 channels, Scopex B has 4 channels but costs 7,400 MXN, and Scopex C is not portable and costs 11,800 MXN."
+        },
+        {
+          "question": "I can raise my budget to 8,000 MXN.",
+          "answer": "Noted: your budget is now 8,000 MXN."
+        }
+      ],
+      "expect": {
+        "required": [
+          {
+            "id": "pick",
+            "description": "Scopex B",
+            "any_of": [
+              "scopex b"
+            ]
+          },
+          {
+            "id": "budget",
+            "description": "uses the 8,000 MXN budget",
+            "any_of": [
+              "8,000",
+              "8000"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "stale",
+            "description": "repeats the superseded 'none fits'",
+            "any_of": [
+              "none of the three fits",
+              "no scopex fits",
+              "no model fits",
+              "none fits"
+            ]
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "user_priorities_respected",
+        "completeness"
+      ],
+      "web": false,
+      "recorded": []
+    },
+    {
+      "id": "hard-newer-source",
+      "category": "conflicting_evidence",
+      "mode": "research",
+      "question": "What is the latest firmware version of the Kestrel K1, according to the two supplied sources?",
+      "instructions": "Two supplied sources, a September one that supersedes a January one. A good answer gives 2.5, says why 2.4 is out of date, and cites the newer source.",
+      "objective": true,
+      "reference_basis": "The two supplied synthetic notes: 2.4 (January) is superseded by 2.5 (September).",
+      "expect": {
+        "required": [
+          {
+            "id": "v25",
+            "description": "version 2.5",
+            "any_of": [
+              "2.5"
+            ]
+          },
+          {
+            "id": "why",
+            "description": "says 2.4 is superseded/older",
+            "any_of": [
+              "supersed",
+              "older",
+              "outdated",
+              "no longer",
+              "replaced",
+              "earlier"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "old",
+            "description": "says 2.4 is the latest",
+            "any_of": [
+              "latest firmware is version 2.4",
+              "latest version is 2.4",
+              "latest is 2.4",
+              "current version is 2.4"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 1,
+        "required_claims": [
+          {
+            "any_of": [
+              "2.5"
+            ],
+            "source_ids": [
+              2
+            ],
+            "description": "firmware 2.5 is the latest"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Release notes, January",
+          "url": "https://kestrel.example.invalid/notes-jan",
+          "published": "2026-01-15",
+          "passage": "Kestrel K1 release notes (synthetic, 2026-01-15): the latest firmware for the Kestrel K1 is version 2.4."
+        },
+        {
+          "id": 2,
+          "title": "Release notes, September",
+          "url": "https://kestrel.example.invalid/notes-sep",
+          "published": "2026-09-02",
+          "passage": "Kestrel K1 release notes (synthetic, 2026-09-02): firmware 2.5 is released. Version 2.4 is superseded and is no longer offered."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "evidence_quality",
+        "citation_accuracy",
+        "freshness",
+        "contradiction_handling"
+      ],
+      "web": false,
+      "history": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-mixed-studies",
+      "category": "scientific_claim",
+      "mode": "research",
+      "question": "Do the two supplied studies together show that compound Q improves reaction time?",
+      "instructions": "One small positive study and one large null study. A good answer says the evidence is mixed / does not establish an improvement, weighs the sample sizes, and cites both. Declaring it proven, or ignoring the large study, fails.",
+      "objective": true,
+      "reference_basis": "The two supplied synthetic summaries: n = 20, p = 0.03 and n = 400, p = 0.60.",
+      "expect": {
+        "required": [
+          {
+            "id": "mixed",
+            "description": "says the evidence is mixed / not established",
+            "any_of": [
+              "mixed",
+              "inconsistent",
+              "conflict",
+              "do not show",
+              "does not show",
+              "don't show",
+              "not conclusive",
+              "inconclusive",
+              "insufficient",
+              "not established",
+              "does not establish",
+              "do not establish",
+              "not shown",
+              "no reliable"
+            ]
+          },
+          {
+            "id": "size",
+            "description": "weighs the larger study",
+            "any_of": [
+              "400",
+              "larger",
+              "bigger"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "proven",
+            "description": "declares an effect proven",
+            "any_of": [
+              "clearly improves",
+              "proves that compound q improves",
+              "is effective",
+              "proven to improve"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 2,
+        "required_claims": [
+          {
+            "any_of": [
+              "0.03",
+              "20 volunteers",
+              "20 participants",
+              "18 ms"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "the small positive study"
+          },
+          {
+            "any_of": [
+              "0.60",
+              "p = 0.6",
+              "400 volunteers",
+              "400 participants",
+              "6 ms"
+            ],
+            "source_ids": [
+              2
+            ],
+            "description": "the large null study"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Study 1 - synthetic",
+          "url": "https://studies.example.invalid/q1",
+          "published": "2026-02-01",
+          "passage": "Synthetic study 1 (written for this dataset): 20 volunteers took compound Q or placebo. Reaction time improved by 18 ms with compound Q versus 4 ms with placebo (p = 0.03)."
+        },
+        {
+          "id": 2,
+          "title": "Study 2 - synthetic",
+          "url": "https://studies.example.invalid/q2",
+          "published": "2026-06-01",
+          "passage": "Synthetic study 2 (written for this dataset): 400 volunteers took compound Q or placebo. Reaction time improved by 6 ms with compound Q versus 5 ms with placebo (p = 0.60)."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "evidence_quality",
+        "citation_accuracy",
+        "uncertainty_calibration",
+        "contradiction_handling"
+      ],
+      "web": false,
+      "history": [],
+      "recorded": []
+    },
+    {
+      "id": "hard-parallel",
+      "category": "multi_step_reasoning",
+      "question": "Two resistors, 6 kilohm and 3 kilohm, are connected in parallel. What is the equivalent resistance?",
+      "instructions": "1 / (1/6k + 1/3k) = 2 kilohm. The usual slip is to add them (9 kilohm).",
+      "objective": true,
+      "reference_basis": "Parallel: (6k x 3k) / (6k + 3k) = 2k.",
+      "expect": {
+        "required": [
+          {
+            "id": "req",
+            "description": "2 kilohm",
+            "any_of": [
+              "2 k",
+              "2k",
+              "2000 ohm",
+              "2,000 ohm",
+              "2 kilo",
+              "2.0 k"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "clarity"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    }
+  ]
+}

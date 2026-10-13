@@ -1,0 +1,68 @@
+/* Design tokens. Every color, size and shadow in the interface comes from here. */
+:root {
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  --font-pixel: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-pill: 999px;
+  --text-xs: 0.75rem; --text-sm: 0.8125rem; --text-md: 0.9375rem; --text-lg: 1.125rem; --text-xl: 1.5rem; --text-2xl: 2rem;
+  --measure: 72ch;
+  --sidebar-w: 248px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-1: 120ms; --dur-2: 220ms;
+
+  /* Agent identities (never the only cue: each also has a name and a shape). */
+  --claude: #e0904f; --claude-soft: #3a2a1d; --claude-ink: #ffd9b3;
+  --codex: #2fb59b; --codex-soft: #14332e; --codex-ink: #a9f0df;
+  --google: #8b7ae8; --google-soft: #26214a; --google-ink: #d3cbff;
+}
+
+:root, :root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0b0e15;
+  --surface-1: #121722;
+  --surface-2: #181e2c;
+  --surface-3: #1f2637;
+  --border: #283047;
+  --border-strong: #3a4563;
+  --text: #e8ecf5;
+  --text-muted: #9ba5bd;
+  --text-faint: #8a94ad;
+  --accent: #7aa2ff;
+  --accent-ink: #0b1224;
+  --accent-soft: #1b2a4d;
+  --ok: #4cc38a; --ok-soft: #12332a;
+  --warn: #e6b450; --warn-soft: #3a2f14;
+  --danger: #f0716f; --danger-soft: #3d1f20;
+  --info: #67b7ff; --info-soft: #11304a;
+  --shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 10px 30px -12px rgba(0,0,0,0.6);
+  --focus: #9db9ff;
+  --code-bg: #0e131d;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f4f6fb;
+  --surface-1: #ffffff;
+  --surface-2: #f0f3fa;
+  --surface-3: #e6ebf6;
+  --border: #d6dded;
+  --border-strong: #b7c1db;
+  --text: #141a2b;
+  --text-muted: #4d5876;
+  --text-faint: #566180;
+  --accent: #2c5bd8;
+  --accent-ink: #ffffff;
+  --accent-soft: #dfe8ff;
+  --ok: #17794f; --ok-soft: #dff5ea;
+  --warn: #8a5a00; --warn-soft: #fbefd0;
+  --danger: #b3261e; --danger-soft: #fde4e2;
+  --info: #0b5fa8; --info-soft: #e0efff;
+  --shadow: 0 1px 2px rgba(20,26,43,0.06), 0 8px 24px -14px rgba(20,26,43,0.25);
+  --focus: #2c5bd8;
+  --code-bg: #eef1f8;
+  --claude: #b45f1b; --claude-soft: #fbeedd; --claude-ink: #5a2d08;
+  --codex: #0f7f6b; --codex-soft: #d9f3ed; --codex-ink: #064539;
+  --google: #5a49c9; --google-soft: #e8e4ff; --google-ink: #2c2178;
+}

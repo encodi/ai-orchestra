@@ -1,0 +1,11 @@
+#!/bin/sh
+here=$(dirname "$0")
+case "$1" in
+  --version) echo "codex-cli 9.9.9"; exit 0;;
+  login) echo "Logged in using ChatGPT"; exit 0;;
+esac
+prompt=$(cat)
+. "$here/body.sh" codex "$prompt"
+printf '{"type":"thread.started","thread_id":"t1"}\n'
+printf '{"type":"item.completed","item":{"id":"1","type":"agent_message","text":"%s"}}\n' "$BODY"
+printf '{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":2}}\n'

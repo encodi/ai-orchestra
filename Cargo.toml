@@ -1,0 +1,48 @@
+[package]
+name = "ai-orchestra"
+version = "0.9.1"
+edition = "2024"
+description = "Local-first multi-agent orchestrator: consult Claude Code, Codex and Google Antigravity together through their official CLIs, with a local web interface."
+authors = ["Enrique C."]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/encodi/ai-orchestra"
+readme = "README.md"
+keywords = ["ai", "agents", "orchestration", "cli", "mcp"]
+categories = ["command-line-utilities", "development-tools"]
+publish = false
+
+[dependencies]
+async-trait = "0.1.92"
+clap = { version = "4.6.7", features = ["derive", "env"] }
+encoding_rs = "0.8.42"
+reqwest = { version = "0.13.5", default-features = false, features = ["rustls", "gzip"] }
+rmcp = { version = "3.5.1", features = ["server", "macros", "transport-io"] }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+schemars = "1"
+scraper = "0.27.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.153"
+sha2 = "0.11.0"
+thiserror = "2.0.21"
+tokio = { version = "1.53.2", features = ["rt-multi-thread", "macros", "process", "io-util", "time", "sync", "signal"] }
+tokio-stream = "0.1"
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+axum = { version = "0.8", default-features = false, features = ["http1", "json", "query", "tokio", "tracing"] }
+tokio-util = { version = "0.7.20", features = ["rt"] }
+toml = "1.1.8"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "fmt"] }
+url = "2.5.8"
+which = "8.0.6"
+
+[target."cfg(unix)".dependencies]
+libc = "0.2.190"
+
+[dev-dependencies]
+tokio = { version = "1.53.2", features = ["test-util"] }
+rmcp = { version = "3.5.1", features = ["client", "transport-child-process"] }
+tempfile = "3.27.0"
+
+[lints.rust]
+# The TLS library (aws-lc) makes the macOS 12 linker print harmless "compact unwind" notes.
+linker_messages = "allow"

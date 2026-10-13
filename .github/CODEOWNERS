@@ -1,0 +1,8 @@
+# Every change is reviewed by the maintainer. Add more owners per area as the team grows.
+*                   @encodi
+/src/providers/     @encodi
+/src/web/           @encodi
+/web/               @encodi
+/AGENTS.md          @encodi
+/SECURITY.md        @encodi
+/.github/           @encodi

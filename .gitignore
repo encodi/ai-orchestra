@@ -1,0 +1,16 @@
+/target
+ai-orchestra.toml
+
+# Maintainer-local live-validation harness (scripts, logs, results, backups of CLI settings). Not part of
+# the public repository; see docs/validation.md for what it measured.
+/live-tests/
+
+/web/node_modules
+/web/test-results
+/web/playwright-report
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

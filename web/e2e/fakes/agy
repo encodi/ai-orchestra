@@ -1,0 +1,12 @@
+#!/bin/sh
+here=$(dirname "$0")
+case "$1" in
+  --version) echo "1.9.9"; exit 0;;
+esac
+prompt=""
+while [ $# -gt 0 ]; do
+  if [ "$1" = "-p" ]; then prompt="$2"; fi
+  shift
+done
+. "$here/body.sh" google "$prompt"
+printf '{"conversation_id":"c1","status":"SUCCESS","response":"%s"}\n' "$BODY"

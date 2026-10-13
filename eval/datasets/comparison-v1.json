@@ -1,0 +1,1011 @@
+{
+  "format": "ai-orchestra-eval-dataset",
+  "format_version": 1,
+  "id": "comparison",
+  "title": "AI Orchestra single-agent vs multi-agent comparison set (synthetic)",
+  "dataset_version": "1.0.1",
+  "provenance": {
+    "authors": [
+      "AI Orchestra project"
+    ],
+    "created": "2026-10-12",
+    "synthetic": true,
+    "description": "Eighteen small cases for the live comparison of one agent against the balanced and thorough strategies. The twelve cases of the starter set (without their fixtures) plus six more. Every product, study and page is invented (the .invalid domains do not exist); reference facts are supplied in the case or follow from arithmetic and textbook definitions. Sources the case supplies are put in the prompt.",
+    "notes": "No recorded responses: this dataset is for live runs and for blind comparison of what they produce. It tests reasoning, instruction-following, use of supplied evidence and calibration. It does not measure how accurately an assistant researches the real web. 1.0.1: three checks (science-claim, uncertain-price, followup-channels) and the weather check were corrected after the first live run showed they matched the question's own wording or missed a paraphrase; no question changed."
+  },
+  "cases": [
+    {
+      "id": "fact-ohm",
+      "category": "simple_fact",
+      "question": "A 12 V supply drives a 4 ohm resistor. What current flows?",
+      "instructions": "Check the number and the unit. Prefer the shorter answer when both are correct.",
+      "objective": true,
+      "reference_basis": "Ohm's law I = V / R; 12 / 4 = 3.",
+      "expect": {
+        "required": [
+          {
+            "id": "amps",
+            "description": "The current is 3 A",
+            "any_of": [
+              "3 A",
+              "3 amps",
+              "3 amperes"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "wrong",
+            "description": "12 A or 48 A",
+            "any_of": [
+              "12 A",
+              "48 A"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "clarity"
+      ],
+      "recorded": [],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "reason-series",
+      "category": "multi_step_reasoning",
+      "question": "A 8 V source drives a 100 ohm and a 300 ohm resistor in series. What is the current, and how much power does the 300 ohm resistor dissipate?",
+      "instructions": "Both numbers must be right. The power follows from the current.",
+      "objective": true,
+      "reference_basis": "Series resistance 400 ohm, I = 8/400 = 0.02 A; P = I^2 R = 0.0004 * 300 = 0.12 W.",
+      "expect": {
+        "required": [
+          {
+            "id": "current",
+            "description": "20 mA",
+            "any_of": [
+              "20 mA",
+              "0.02 A"
+            ]
+          },
+          {
+            "id": "power",
+            "description": "0.12 W",
+            "any_of": [
+              "0.12 W",
+              "120 mW"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "parallel",
+            "description": "treats them as parallel",
+            "any_of": [
+              "parallel"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "logical_consistency"
+      ],
+      "recorded": [],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "tech-aliasing",
+      "category": "technical_explanation",
+      "mode": "learn",
+      "question": "Explain aliasing in an oscilloscope to a beginner and say what sample rate I need for a 10 kHz signal.",
+      "instructions": "The explanation must state the sampling rule correctly and address the common misunderstanding.",
+      "objective": true,
+      "reference_basis": "The Nyquist-Shannon sampling theorem: the sample rate must exceed twice the highest frequency component.",
+      "expect": {
+        "required": [
+          {
+            "id": "rule",
+            "description": "more than twice the signal frequency",
+            "any_of": [
+              "twice",
+              "2x",
+              "two times",
+              "nyquist"
+            ]
+          },
+          {
+            "id": "number",
+            "description": "above 20 kHz",
+            "any_of": [
+              "20 kHz"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "half",
+            "description": "claims half the frequency is enough",
+            "any_of": [
+              "5 khz is enough",
+              "half the signal frequency is enough"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "conceptual_accuracy",
+        "misconceptions_identified",
+        "clarity",
+        "appropriate_difficulty"
+      ],
+      "recorded": [],
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "science-claim",
+      "category": "scientific_claim",
+      "mode": "research",
+      "question": "A website says supplement X improves memory. Using the supplied study summary, is that claim supported?",
+      "instructions": "Judge only against the supplied summary. A cited passage must say what the sentence says.",
+      "objective": true,
+      "reference_basis": "The supplied synthetic summary states no significant difference (p = 0.41).",
+      "expect": {
+        "required": [
+          {
+            "id": "nosig",
+            "description": "no significant difference",
+            "any_of": [
+              "not statistically significant",
+              "no significant difference",
+              "p = 0.41"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "improves",
+            "description": "asserts that it improves memory",
+            "any_of": [
+              "significantly improved",
+              "clearly improves memory",
+              "the claim is supported",
+              "claim is well supported"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 1,
+        "required_claims": [
+          {
+            "any_of": [
+              "not statistically significant",
+              "no significant difference"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "the trial found no significant difference"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Supplement X trial summary - synthetic",
+          "url": "https://study.example.invalid/x",
+          "published": "2026-02-10",
+          "passage": "Synthetic trial summary (written for this dataset). 40 participants took supplement X for eight weeks and 40 took a placebo. Memory test scores changed by +2.1 points with supplement X and +1.9 points with placebo; the difference was not statistically significant (p = 0.41)."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "evidence_quality",
+        "citation_accuracy",
+        "uncertainty_calibration",
+        "source_provenance"
+      ],
+      "recorded": [],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "product-scopex",
+      "category": "product_comparison",
+      "mode": "review",
+      "question": "Compare Scopex A, B and C for a student who needs a portable scope with four channels.",
+      "instructions": "Check the specifications against the supplied datasheet and that every figure is cited. The right pick is checkable from the datasheet.",
+      "objective": true,
+      "reference_basis": "The supplied synthetic datasheet lists channels, bandwidth, price and portability.",
+      "expect": {
+        "required": [
+          {
+            "id": "pick",
+            "description": "recommends Scopex B",
+            "any_of": [
+              "Scopex B"
+            ]
+          },
+          {
+            "id": "channels",
+            "description": "four channels",
+            "any_of": [
+              "4 channels",
+              "four channels"
+            ]
+          },
+          {
+            "id": "price",
+            "description": "7,400 MXN",
+            "any_of": [
+              "7,400",
+              "7400"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "portableC",
+            "description": "calls Scopex C portable",
+            "any_of": [
+              "scopex c is portable",
+              "c is a portable"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 2,
+        "required_claims": [
+          {
+            "any_of": [
+              "7,400",
+              "7400"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "the price of Scopex B"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "evidence_quality",
+        "citation_accuracy",
+        "source_provenance",
+        "completeness",
+        "recommendation_value",
+        "advantages_and_disadvantages"
+      ],
+      "recorded": [],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "decision-budget",
+      "category": "personal_decision",
+      "mode": "decision",
+      "question": "My synthetic profile: I am a student, my budget is 8,000 MXN, I need at least 4 channels, and I carry it between home and school. Which Scopex should I buy?",
+      "instructions": "Subjective scenario with stated preferences. Judge whether the stated budget and the channel requirement are respected, whether the trade-offs are fair and whether missing information is acknowledged. There is no single right answer.",
+      "objective": false,
+      "reference_basis": "",
+      "expect": {
+        "constraints": [
+          {
+            "id": "budget",
+            "description": "stays within 8,000 MXN",
+            "any_of": [
+              "8,000",
+              "8000"
+            ]
+          },
+          {
+            "id": "channels",
+            "description": "mentions the 4 channel requirement",
+            "any_of": [
+              "4 channels",
+              "four channels"
+            ]
+          }
+        ],
+        "forbidden": []
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "user_priorities_respected",
+        "instruction_adherence",
+        "alternatives_compared_fairly",
+        "costs_and_risks",
+        "recommendation_follows_evidence",
+        "missing_information_acknowledged",
+        "decision_usefulness"
+      ],
+      "recorded": [],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "research-voltix",
+      "category": "multi_source_research",
+      "mode": "research",
+      "question": "Using the three supplied sources, summarise the Voltix V2: battery, weight, price and any known problem.",
+      "instructions": "Each fact must come from the right source. The answer must keep the screen problem and its status.",
+      "objective": true,
+      "reference_basis": "The three supplied synthetic sources state each fact once.",
+      "expect": {
+        "required": [
+          {
+            "id": "battery",
+            "description": "5.0 Ah",
+            "any_of": [
+              "5.0 Ah",
+              "5 Ah"
+            ]
+          },
+          {
+            "id": "weight",
+            "description": "410 g",
+            "any_of": [
+              "410 g"
+            ]
+          },
+          {
+            "id": "price",
+            "description": "2,150 MXN",
+            "any_of": [
+              "2,150",
+              "2150"
+            ]
+          },
+          {
+            "id": "screen",
+            "description": "the screen scratches and batch 3 fixed it",
+            "any_of": [
+              "scratch"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 3,
+        "required_claims": [
+          {
+            "any_of": [
+              "5.0 Ah",
+              "5 Ah"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "battery capacity"
+          },
+          {
+            "any_of": [
+              "2,150",
+              "2150"
+            ],
+            "source_ids": [
+              2
+            ],
+            "description": "price"
+          },
+          {
+            "any_of": [
+              "scratch"
+            ],
+            "source_ids": [
+              3
+            ],
+            "description": "screen problem"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Teardown notes",
+          "url": "https://teardown.example.invalid/v2",
+          "published": "2026-04-01",
+          "passage": "Teardown notes (synthetic): the Voltix V2 battery is rated 5.0 Ah and the unit weighs 410 g."
+        },
+        {
+          "id": 2,
+          "title": "Retailer listing",
+          "url": "https://shop.example.invalid/v2",
+          "published": "2026-09-30",
+          "passage": "Retailer listing (synthetic): the Voltix V2 costs 2,150 MXN and ships with two probes."
+        },
+        {
+          "id": 3,
+          "title": "Forum thread",
+          "url": "https://forum.example.invalid/v2",
+          "published": "2026-08-15",
+          "passage": "Forum thread (synthetic): users report the Voltix V2 screen scratches easily; the maker confirmed a harder glass from batch 3."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "evidence_quality",
+        "citation_accuracy",
+        "source_provenance",
+        "contradiction_handling",
+        "freshness"
+      ],
+      "recorded": [],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "conflict-kestrel",
+      "category": "conflicting_evidence",
+      "mode": "research",
+      "question": "How much analog bandwidth does the Kestrel K1 have, according to the two supplied sources?",
+      "instructions": "The sources disagree. A good answer shows both numbers, says they conflict, and does not pick one as settled without a reason.",
+      "objective": true,
+      "reference_basis": "The two supplied synthetic sources give 70 MHz and 100 MHz.",
+      "expect": {
+        "required": [
+          {
+            "id": "both70",
+            "description": "reports 70 MHz",
+            "any_of": [
+              "70 MHz"
+            ]
+          },
+          {
+            "id": "both100",
+            "description": "reports 100 MHz",
+            "any_of": [
+              "100 MHz"
+            ]
+          },
+          {
+            "id": "conflict",
+            "description": "says they conflict",
+            "any_of": [
+              "conflict",
+              "disagree",
+              "differ",
+              "inconsistent"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "settled",
+            "description": "declares one value settled",
+            "any_of": [
+              "definitely 100 MHz",
+              "the bandwidth is exactly 70 MHz",
+              "the answer is 70 MHz"
+            ]
+          }
+        ],
+        "expects_uncertainty": false,
+        "must_cite": true,
+        "min_citations": 2
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Maker datasheet",
+          "url": "https://maker.example.invalid/k1",
+          "published": "2026-01-05",
+          "passage": "Maker datasheet (synthetic): the Kestrel K1 has 70 MHz of analog bandwidth."
+        },
+        {
+          "id": 2,
+          "title": "Lab test",
+          "url": "https://lab.example.invalid/k1",
+          "published": "2026-06-20",
+          "passage": "Lab test (synthetic): measured with a calibrated source, the Kestrel K1 reached 100 MHz of -3 dB bandwidth in our unit."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "citation_accuracy",
+        "contradiction_handling",
+        "uncertainty_calibration",
+        "freshness"
+      ],
+      "recorded": [],
+      "web": false,
+      "history": []
+    },
+    {
+      "id": "uncertain-price",
+      "category": "uncertainty_expected",
+      "question": "What will a Scopex B cost in the year 2030?",
+      "instructions": "No one can know this. A good answer says so, and may explain what would affect it. Asserting a number fails.",
+      "objective": true,
+      "reference_basis": "Future prices cannot be known; the case defines the correct response as stating that.",
+      "expect": {
+        "expects_uncertainty": true,
+        "forbidden": [
+          {
+            "id": "number",
+            "description": "states a price for 2030",
+            "any_of": [
+              "will cost around",
+              "will cost about",
+              "will cost approximately",
+              "will cost roughly",
+              "will be 8",
+              "will be 9",
+              "will be 6",
+              "will be 5"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "uncertainty_calibration",
+        "clarity",
+        "missing_information_acknowledged"
+      ],
+      "recorded": [],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "misleading-nyquist",
+      "category": "misleading_information",
+      "question": "Since the Nyquist rate is half the signal frequency, what sample rate do I need for a 10 kHz signal?",
+      "instructions": "The question contains a false premise. A good answer corrects it before answering.",
+      "objective": true,
+      "reference_basis": "The sampling theorem requires more than twice the highest frequency.",
+      "expect": {
+        "required": [
+          {
+            "id": "correct",
+            "description": "says the premise is wrong / twice",
+            "any_of": [
+              "twice",
+              "2x",
+              "not half",
+              "incorrect",
+              "false premise"
+            ]
+          },
+          {
+            "id": "number",
+            "description": "above 20 kHz",
+            "any_of": [
+              "20 kHz"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "accepts",
+            "description": "accepts 5 kHz",
+            "any_of": [
+              "5 khz is enough",
+              "5 khz is sufficient",
+              "you need 5 khz",
+              "at least 5 khz"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "instruction_adherence",
+        "logical_consistency"
+      ],
+      "recorded": [],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "followup-channels",
+      "category": "follow_up_memory",
+      "question": "Of the two cheapest ones, which has more channels?",
+      "instructions": "The question depends on the earlier exchange. A system without the earlier context cannot answer; the answer is checkable from the earlier turn.",
+      "objective": true,
+      "reference_basis": "The earlier turn in this case lists channels and prices; the two cheapest are Scopex A and Scopex B.",
+      "history": [
+        {
+          "question": "Compare Scopex A, B and C briefly.",
+          "answer": "The Scopex B has 4 channels and costs 7,400 MXN. The Scopex A has 2 channels and costs 3,900 MXN. The Scopex C has 4 channels, costs 11,800 MXN and is a benchtop unit."
+        }
+      ],
+      "expect": {
+        "required": [
+          {
+            "id": "answer",
+            "description": "Scopex B",
+            "any_of": [
+              "Scopex B"
+            ]
+          },
+          {
+            "id": "count",
+            "description": "4 channels",
+            "any_of": [
+              "4 channels",
+              "four channels",
+              "has 4",
+              "4, compared",
+              "4 compared",
+              "4 against",
+              "4 vs"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "c",
+            "description": "names Scopex C",
+            "any_of": [
+              "scopex c has more"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "clarity"
+      ],
+      "recorded": [],
+      "mode": null,
+      "web": false,
+      "evidence": []
+    },
+    {
+      "id": "cheap-dc",
+      "category": "fewer_calls_sufficient",
+      "question": "What does DC stand for in electronics?",
+      "instructions": "A single agent is enough. Extra agents add cost, not quality; compare correctness and calls.",
+      "objective": true,
+      "reference_basis": "Standard terminology: DC is direct current.",
+      "expect": {
+        "required": [
+          {
+            "id": "dc",
+            "description": "direct current",
+            "any_of": [
+              "direct current"
+            ]
+          }
+        ],
+        "single_agent_sufficient": true
+      },
+      "criteria": [
+        "factual_correctness",
+        "clarity"
+      ],
+      "recorded": [],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": []
+    },
+    {
+      "id": "fact-power",
+      "category": "simple_fact",
+      "question": "A 12 V supply drives a 6 ohm resistor. How much power does the resistor dissipate?",
+      "instructions": "Check the number and the unit.",
+      "objective": true,
+      "reference_basis": "P = V^2 / R = 144 / 6 = 24 W.",
+      "expect": {
+        "required": [
+          {
+            "id": "watts",
+            "description": "24 W",
+            "any_of": [
+              "24 W",
+              "24 watts"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "wrong",
+            "description": "72 W",
+            "any_of": [
+              "72 W",
+              "2 W,"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "clarity"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "reason-divider",
+      "category": "multi_step_reasoning",
+      "question": "A voltage divider has a 10 kilohm resistor from the input to the output node and a 5 kilohm resistor from the output node to ground. The input is 9 V. What is the output voltage, and what current flows through the divider?",
+      "instructions": "Both numbers must be right.",
+      "objective": true,
+      "reference_basis": "Vout = 9 x 5 / (10 + 5) = 3 V; I = 9 V / 15 kilohm = 0.6 mA.",
+      "expect": {
+        "required": [
+          {
+            "id": "vout",
+            "description": "3 V",
+            "any_of": [
+              "3 V",
+              "3 volts"
+            ]
+          },
+          {
+            "id": "current",
+            "description": "0.6 mA",
+            "any_of": [
+              "0.6 mA",
+              "600 uA",
+              "600 µA"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "wrongv",
+            "description": "6 V",
+            "any_of": [
+              "6 V",
+              "6 volts"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "factual_correctness",
+        "completeness",
+        "logical_consistency"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "tech-decoupling",
+      "category": "technical_explanation",
+      "mode": "learn",
+      "question": "Why do designers put a 100 nF capacitor right next to the supply pin of a digital chip? Explain for a beginner.",
+      "instructions": "The explanation should name the purpose (local energy for fast current spikes / filtering supply noise) and the placement reason (short path, low inductance).",
+      "objective": true,
+      "reference_basis": "Standard electronics practice (decoupling / bypass capacitors).",
+      "expect": {
+        "required": [
+          {
+            "id": "purpose",
+            "description": "decoupling or bypassing or supply noise",
+            "any_of": [
+              "decoupl",
+              "bypass",
+              "supply noise",
+              "current spikes",
+              "transient"
+            ]
+          },
+          {
+            "id": "placement",
+            "description": "close to the pin",
+            "any_of": [
+              "close",
+              "short",
+              "inductance"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "conceptual_accuracy",
+        "clarity",
+        "appropriate_difficulty",
+        "examples_and_analogies"
+      ],
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    },
+    {
+      "id": "science-battery",
+      "category": "scientific_claim",
+      "mode": "research",
+      "question": "A brochure says Battery Z keeps 95% of its capacity after 500 cycles. Using the supplied test summary, is that supported?",
+      "instructions": "Judge only against the supplied summary; the cited passage must say what the sentence says.",
+      "objective": true,
+      "reference_basis": "The supplied synthetic summary reports 80% after 500 cycles.",
+      "expect": {
+        "required": [
+          {
+            "id": "eighty",
+            "description": "80%",
+            "any_of": [
+              "80%",
+              "80 %",
+              "80 percent"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "accepts",
+            "description": "accepts 95% as supported",
+            "any_of": [
+              "95% is supported",
+              "the claim is supported",
+              "confirms the 95%"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 1,
+        "required_claims": [
+          {
+            "any_of": [
+              "80%",
+              "80 %",
+              "80 percent"
+            ],
+            "source_ids": [
+              1
+            ],
+            "description": "the test measured 80%"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Battery Z test summary - synthetic",
+          "url": "https://cells.example.invalid/z",
+          "published": "2026-05-02",
+          "passage": "Synthetic cell test summary (written for this dataset). Battery Z retained 80% of its capacity after 500 charge cycles at 25 C; the maker's brochure claims 95%."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "evidence_quality",
+        "citation_accuracy",
+        "uncertainty_calibration",
+        "source_provenance"
+      ],
+      "web": false,
+      "history": [],
+      "recorded": []
+    },
+    {
+      "id": "decision-cheapest",
+      "category": "personal_decision",
+      "mode": "decision",
+      "question": "My synthetic profile: I want the cheapest handheld scope that has at least 2 channels and at least 60 MHz. Using the supplied datasheet, which Scopex should I buy?",
+      "instructions": "Checkable from the datasheet: the stated constraints single out one model. Judge whether the answer respects them and says what it did not check.",
+      "objective": true,
+      "reference_basis": "Scopex A (3,900 MXN, 2 channels, 70 MHz, handheld) is the cheapest model meeting the constraints.",
+      "expect": {
+        "required": [
+          {
+            "id": "pick",
+            "description": "Scopex A",
+            "any_of": [
+              "Scopex A"
+            ]
+          }
+        ],
+        "constraints": [
+          {
+            "id": "price",
+            "description": "3,900 MXN",
+            "any_of": [
+              "3,900",
+              "3900"
+            ]
+          }
+        ],
+        "forbidden": [
+          {
+            "id": "wrong",
+            "description": "recommends C",
+            "any_of": [
+              "buy the scopex c",
+              "scopex c is the cheapest"
+            ]
+          }
+        ],
+        "must_cite": true,
+        "min_citations": 1
+      },
+      "evidence": [
+        {
+          "id": 1,
+          "title": "Scopex range - synthetic datasheet",
+          "url": "https://scopex.example.invalid/range",
+          "published": "2026-03-01",
+          "passage": "Scopex A is a handheld oscilloscope with 2 channels, 70 MHz of analog bandwidth and a list price of 3,900 MXN. Scopex B is a handheld oscilloscope with 4 channels, 100 MHz of analog bandwidth and a list price of 7,400 MXN. Scopex C is a benchtop oscilloscope with 4 channels, 200 MHz of analog bandwidth and a list price of 11,800 MXN and is not portable."
+        }
+      ],
+      "criteria": [
+        "factual_correctness",
+        "user_priorities_respected",
+        "citation_accuracy",
+        "recommendation_follows_evidence",
+        "missing_information_acknowledged",
+        "decision_usefulness"
+      ],
+      "web": false,
+      "history": [],
+      "recorded": []
+    },
+    {
+      "id": "uncertain-weather",
+      "category": "uncertainty_expected",
+      "question": "Will it rain at my house on 3 March 2031?",
+      "instructions": "No one can know this. A good answer says so (and may say what is knowable, such as climatology). Asserting an outcome fails.",
+      "objective": true,
+      "reference_basis": "Weather on a specific date years ahead cannot be known; the case defines the correct response as stating that.",
+      "expect": {
+        "expects_uncertainty": true,
+        "forbidden": [
+          {
+            "id": "asserts",
+            "description": "states that it will or will not rain",
+            "any_of": [
+              "it will rain on",
+              "it will not rain on",
+              "it won't rain on",
+              "it will be sunny",
+              "it will be dry"
+            ]
+          }
+        ]
+      },
+      "criteria": [
+        "uncertainty_calibration",
+        "clarity",
+        "missing_information_acknowledged"
+      ],
+      "mode": null,
+      "web": false,
+      "history": [],
+      "evidence": [],
+      "recorded": []
+    }
+  ]
+}

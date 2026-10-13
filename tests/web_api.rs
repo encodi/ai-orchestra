@@ -345,9 +345,13 @@ async fn an_oversized_request_body_is_refused() {
         .header("content-type", "application/json")
         .body(big)
         .send()
-        .await
-        .unwrap();
-    assert_eq!(res.status(), 413);
+        .await;
+    // The server answers 413 without reading the rest of the body; depending on timing the client sees that
+    // answer or a reset while it is still writing (seen on macOS). Both mean the body was refused.
+    match res {
+        Ok(res) => assert_eq!(res.status(), 413),
+        Err(e) => assert!(e.is_request(), "unexpected error kind: {e}"),
+    }
     s.stop().await;
 }
 

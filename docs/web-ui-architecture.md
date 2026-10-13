@@ -150,6 +150,11 @@ before.
   `extra_allowed_hosts` are answered; anything else is `421`.
 * **Origin check:** a request with an `Origin` that is not one of those hosts is refused. There is **no
   CORS**: `OPTIONS` is `405` and no `Access-Control-*` header is ever sent.
+* **Fetch metadata:** a request the browser labels `Sec-Fetch-Site: cross-site` or `same-site` (another site,
+  or another web app on `localhost` with a different port) is refused with `403`, reads included, except a
+  top-level navigation by `GET` (which only shows the page). Clients that send no such header (curl, tests)
+  still need the right Host and, to change anything, the token.
+* **Body limit:** request bodies are capped at 1 MiB (`413` above it).
 * **Token:** every state-changing request (`POST`, `PUT`, `DELETE`) needs `X-AIO-Token`, a fresh 64-hex
   token per server run (OS randomness, compared in constant time). Only the page this server serves knows it
   (it is injected into `index.html`), and a cross-origin page cannot read it. Bodies must be

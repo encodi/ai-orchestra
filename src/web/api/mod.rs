@@ -34,6 +34,13 @@ where
     async fn from_request(req: Request, state: &St) -> Result<Self, ApiError> {
         match axum::Json::<T>::from_request(req, state).await {
             Ok(axum::Json(v)) => Ok(Body(v)),
+            Err(e) if e.status() == axum::http::StatusCode::PAYLOAD_TOO_LARGE => {
+                Err(ApiError::new(
+                    axum::http::StatusCode::PAYLOAD_TOO_LARGE,
+                    "validation",
+                    "the request body is too large",
+                ))
+            }
             Err(e) => Err(ApiError::validation(format!(
                 "the request body is not valid: {}",
                 e.body_text()

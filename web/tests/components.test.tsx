@@ -205,7 +205,8 @@ describe('research view', () => {
     renderI18n(<ResearchView data={research} focus={null} onFocus={() => undefined} />)
     await userEvent.click(screen.getByRole('button', { name: /Candidatas sin descargar/ }))
     const links = Array.from(document.querySelectorAll('a[href]'))
-    expect(links.some((a) => a.getAttribute('href')?.startsWith('javascript:'))).toBe(false)
+    // An allow-list (http, https or an in-page anchor) rather than a block-list of schemes such as javascript:.
+    expect(links.every((a) => /^(https?:\/\/|#)/i.test(a.getAttribute('href') ?? ''))).toBe(true)
     const vendor = links.find((a) => a.getAttribute('href') === 'https://vendor.example/ds')
     expect(vendor?.getAttribute('rel')).toBe('noopener noreferrer')
     expect(vendor?.getAttribute('target')).toBe('_blank')

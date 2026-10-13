@@ -5,6 +5,15 @@ the project uses [semantic versioning](https://semver.org/) (pre-1.0: minor vers
 
 ## [Unreleased]
 
+### Security
+- Web server: refuse requests the browser labels `Sec-Fetch-Site: cross-site`/`same-site` (except a plain
+  top-level navigation), and cap request bodies at 1 MiB (`413`).
+- Frontend tooling: `vitest` 3.2 -> 4.1.11 (fixes the `vitest`/`@vitest/mocker` path-traversal and the
+  `tinypool` prototype-pollution advisories; development dependencies only, nothing shipped in the binary).
+- CI: third-party GitHub Actions are pinned by commit SHA.
+- Tests: the link check now uses an allow-list (http, https, in-page anchors) instead of blocking `javascript:`
+  (CodeQL `js/incomplete-url-scheme-check`).
+
 ## [0.9.1] - 2026-10-13
 
 First public release. Earlier milestones (1 to 9) were developed privately; their design and verification

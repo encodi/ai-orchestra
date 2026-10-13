@@ -284,6 +284,74 @@ async fn a_request_for_another_host_is_refused_whatever_it_asks() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn requests_the_browser_labels_as_from_another_site_are_refused() {
+    let s = start().await;
+    let url = format!("{}/api/v1/health", s.base);
+    for site in ["cross-site", "same-site"] {
+        let res = s
+            .client
+            .get(&url)
+            .header("sec-fetch-site", site)
+            .header("sec-fetch-mode", "cors")
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(res.status(), 403, "a {site} read must be refused");
+        let post = s
+            .client
+            .post(format!("{}/api/v1/consultations", s.base))
+            .header("x-aio-token", &s.state.token)
+            .header("sec-fetch-site", site)
+            .header("content-type", "application/json")
+            .body(json!({"question": "x", "dry_run": true}).to_string())
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(
+            post.status(),
+            403,
+            "a {site} change is refused even with the token"
+        );
+    }
+    // Our own page, the address bar, and a link followed from another site (it only shows the page).
+    for (site, mode) in [
+        ("same-origin", "cors"),
+        ("none", "navigate"),
+        ("cross-site", "navigate"),
+    ] {
+        let res = s
+            .client
+            .get(&url)
+            .header("sec-fetch-site", site)
+            .header("sec-fetch-mode", mode)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(res.status(), 200, "{site} / {mode} must be allowed");
+    }
+    // A client that sends no fetch metadata (curl, the CLI tests) is unaffected: it still needs Host and the token.
+    assert_eq!(s.client.get(&url).send().await.unwrap().status(), 200);
+    s.stop().await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn an_oversized_request_body_is_refused() {
+    let s = start().await;
+    let big = format!("{{\"question\": \"{}\"}}", "a".repeat(2 * 1024 * 1024));
+    let res = s
+        .client
+        .post(format!("{}/api/v1/consultations", s.base))
+        .header("x-aio-token", &s.state.token)
+        .header("content-type", "application/json")
+        .body(big)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 413);
+    s.stop().await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn changing_anything_needs_the_run_token_json_and_a_local_origin() {
     let s = start().await;
     let url = format!("{}/api/v1/consultations", s.base);

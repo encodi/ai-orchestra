@@ -5,6 +5,9 @@ the project uses [semantic versioning](https://semver.org/) (pre-1.0: minor vers
 
 ## [Unreleased]
 
+### Changed
+- Frontend tooling: `vite` 7 -> 8 with `@vitejs/plugin-react` 4 -> 6 (vite 8 needs the newer plugin); `web/dist` rebuilt.
+
 ### Security
 - Web server: refuse requests the browser labels `Sec-Fetch-Site: cross-site`/`same-site` (except a plain
   top-level navigation), and cap request bodies at 1 MiB (`413`).

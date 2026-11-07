@@ -148,7 +148,6 @@ function useLazy<T>(load: (() => Promise<T>) | null, key: string): { data: T | n
       alive = false
     }
     // `load` is rebuilt every render; the key says when a reload is wanted.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, load === null])
   const current = state.key === key
   return { data: current ? state.data : null, error: current ? state.error : null, loading: load !== null && !(current && (state.data || state.error)) }
